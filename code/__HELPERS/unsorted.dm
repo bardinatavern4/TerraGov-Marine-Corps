@@ -550,7 +550,7 @@ GLOBAL_REAL_VAR(list/stack_trace_storage)
 						corner.density = TRUE
 						corner.anchored = TRUE
 						corner.icon = X.icon
-						corner.icon_state = oldreplacetext(X.icon_state, "_s", "_f")
+						corner.icon_state = replacetext(X.icon_state, "_s", "_f")
 						corner.tag = "delete me"
 						corner.name = "wall"
 
@@ -569,7 +569,7 @@ GLOBAL_REAL_VAR(list/stack_trace_storage)
 						// Reset the shuttle corners
 						if(O.tag == "delete me")
 							X.icon = 'icons/turf/shuttle.dmi'
-							X.icon_state = oldreplacetext(O.icon_state, "_f", "_s") // revert the turf to the old icon_state
+							X.icon_state = replacetext(O.icon_state, "_f", "_s") // revert the turf to the old icon_state
 							X.name = "wall"
 							qdel(O) // prevents multiple shuttle corners from stacking
 							continue
@@ -620,6 +620,7 @@ GLOBAL_REAL_VAR(list/stack_trace_storage)
 
 
 /proc/DuplicateObject(atom/original, atom/newloc)
+	RETURN_TYPE(original.type)
 	if(!original || !newloc)
 		return
 
@@ -998,7 +999,7 @@ GLOBAL_LIST_INIT(wallitems, typecacheof(list(
 
 
 /proc/format_text(text)
-	return oldreplacetext(oldreplacetext(text,"\proper ",""),"\improper ","")
+	return replacetext(replacetext(text,"\proper ",""),"\improper ","")
 
 
 //Reasonably Optimized Bresenham's Line Drawing
@@ -1152,6 +1153,13 @@ GLOBAL_LIST_INIT(wallitems, typecacheof(list(
 	pixel_x = initialpixelx
 	pixel_y = initialpixely
 
+/atom/proc/contains(atom/A)
+	if(!A)
+		return FALSE
+	for(var/atom/location = A.loc, location, location = location.loc)
+		if(location == src)
+			return TRUE
+
 /*
 
 Gets the turf this atom's *ICON* appears to inhabit
@@ -1216,3 +1224,38 @@ will handle it, but:
 
 /proc/send_global_signal(signal) //Wrapper for callbacks and the likes.
 	SEND_GLOBAL_SIGNAL(signal)
+
+//takes an input_key, as text, and the list of keys already used, outputting a replacement key in the format of "[input_key] ([number_of_duplicates])" if it finds a duplicate
+//use this for lists of things that might have the same name, like mobs or objects, that you plan on giving to a player as input
+/proc/avoid_assoc_duplicate_keys(input_key, list/used_key_list)
+	if(!input_key || !istype(used_key_list))
+		return
+	if(used_key_list[input_key])
+		used_key_list[input_key]++
+		input_key = "[input_key] ([used_key_list[input_key]])"
+	else
+		used_key_list[input_key] = 1
+	return input_key
+
+//Returns a list of all items of interest with their name
+/proc/getpois(mobs_only=FALSE,skip_mindless=FALSE)
+	var/list/mobs = sortmobs()
+	var/list/namecounts = list()
+	var/list/pois = list()
+	for(var/mob/M in mobs)
+		if(skip_mindless && (!M.mind && !M.ckey))
+			continue
+		if(M.client && M.client.holder && M.client.holder.fakekey) //stealthmins
+			continue
+		var/name = avoid_assoc_duplicate_keys(M.name, namecounts)
+
+		if(M.real_name && M.real_name != M.name)
+			name += " \[[M.real_name]\]"
+		if(M.stat == DEAD)
+			if(isobserver(M))
+				name += " \[ghost\]"
+			else
+				name += " \[dead\]"
+		pois[name] = M
+
+	return pois

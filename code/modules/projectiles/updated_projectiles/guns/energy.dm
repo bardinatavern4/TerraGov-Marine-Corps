@@ -118,9 +118,9 @@
 	reload_sound = 'sound/weapons/guns/interact/rifle_reload.ogg'
 	fire_sound = 'sound/weapons/guns/fire/laser.ogg'
 	load_method = CELL //codex
-
 	ammo = /datum/ammo/energy/lasgun
 	flags_equip_slot = ITEM_SLOT_BACK
+	muzzleflash_iconstate = "muzzle_flash_laser"
 	w_class = WEIGHT_CLASS_BULKY
 	force = 15
 	overcharge = FALSE
@@ -141,7 +141,7 @@
 
 /obj/item/weapon/gun/energy/lasgun/M43
 	name = "\improper M43 Sunfury Lasgun MK1"
-	desc = "An accurate, recoilless laser based battle rifle with an integrated charge selector. Ideal for longer range engagements. Uses power cells."
+	desc = "An accurate, recoilless laser based battle rifle with an integrated charge selector. Ideal for longer range engagements. Uses power cells instead of ballistic magazines.."
 	force = 20 //Large and hefty! Includes stock bonus.
 	icon_state = "m43"
 	item_state = "m43"
@@ -382,6 +382,7 @@
 	max_shots = 100//codex stuff
 	load_method = CELL //codex stuff
 	ammo = /datum/ammo/energy/lasgun/pulsebolt
+	muzzleflash_iconstate = "muzzle_flash_pulse"
 	cell_type = /obj/item/cell/lasgun/pulse
 	charge_cost = M43_STANDARD_AMMO_COST
 

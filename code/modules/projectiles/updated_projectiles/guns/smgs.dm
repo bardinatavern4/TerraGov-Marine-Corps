@@ -4,6 +4,7 @@
 	reload_sound = 'sound/weapons/guns/interact/smg_reload.ogg'
 	cocked_sound = 'sound/weapons/guns/interact/smg_cocked.ogg'
 	type_of_casings = "bullet"
+	muzzleflash_iconstate = "muzzle_flash_light"
 	load_method = MAGAZINE //codex
 	force = 8
 	w_class = WEIGHT_CLASS_BULKY
@@ -38,6 +39,46 @@
 		return in_chamber ? 1 : 0
 	else
 		return in_chamber ? (current_mag.current_rounds + 1) : current_mag.current_rounds
+
+//-------------------------------------------------------
+
+/obj/item/weapon/gun/smg/standard_smg
+	name = "\improper T-19 submachinegun"
+	desc = "The T-19 submachine gun is the TerraGov Marine Corps standard issue SMG. Its known for it's compact size and ease of use inside the field. It's usually carried by specialized troops who do not have the space to carry a much larger gun like medics and engineers. It uses 10x20mm caseless rounds."
+	icon_state = "t19"
+	item_state = "t19"
+	caliber = "10x20mm caseless" //codex
+	max_shells = 60 //codex
+	flags_equip_slot = ITEM_SLOT_BACK
+	current_mag = /obj/item/ammo_magazine/smg/standard_smg
+	type_of_casings = null
+	attachable_allowed = list(
+						/obj/item/attachable/suppressor,
+						/obj/item/attachable/reddot,
+						/obj/item/attachable/verticalgrip,
+						/obj/item/attachable/stock/t19stock,
+						/obj/item/attachable/compensator,
+						/obj/item/attachable/lasersight,
+						/obj/item/attachable/flashlight,
+						/obj/item/attachable/extended_barrel,
+						/obj/item/attachable/heavy_barrel,
+						/obj/item/attachable/scope/mini,
+						/obj/item/attachable/burstfire_assembly,
+						/obj/item/attachable/magnetic_harness,
+						/obj/item/attachable/gyro)
+
+	flags_gun_features = GUN_AUTO_EJECTOR|GUN_CAN_POINTBLANK|GUN_AMMO_COUNTER|GUN_LOAD_INTO_CHAMBER
+	gun_firemode_list = list(GUN_FIREMODE_SEMIAUTO, GUN_FIREMODE_BURSTFIRE, GUN_FIREMODE_AUTOMATIC, GUN_FIREMODE_AUTOBURST)
+	attachable_offset = list("muzzle_x" = 27, "muzzle_y" = 17,"rail_x" = 9, "rail_y" = 20, "under_x" = 21, "under_y" = 12, "stock_x" = 24, "stock_y" = 10)
+
+	accuracy_mult = 0.95
+	accuracy_mult_unwielded = 0.9
+	scatter = 20
+	fire_delay = 0.2 SECONDS
+	scatter_unwielded = 30
+	aim_slowdown = 0.15
+	burst_amount = 2
+
 
 //-------------------------------------------------------
 //M39 SMG
@@ -81,14 +122,13 @@
 	burst_amount = 2
 
 
-//-------------------------------------------------------
-
 /obj/item/weapon/gun/smg/m39/elite
 	name = "\improper M39B2 submachinegun"
 	desc = "Armat Battlefield Systems M39 submachinegun, B2 variant. This reliable weapon fires armor piercing 10x20mm rounds and is used by elite troops."
 	icon_state = "m39b2"
 	item_state = "m39b2"
 	current_mag = /obj/item/ammo_magazine/smg/m39/ap
+
 	flags_item_map_variant = NONE
 	flags_gun_features = GUN_AUTO_EJECTOR|GUN_CAN_POINTBLANK|GUN_AMMO_COUNTER|GUN_LOAD_INTO_CHAMBER
 	gun_firemode_list = list(GUN_FIREMODE_SEMIAUTO, GUN_FIREMODE_BURSTFIRE, GUN_FIREMODE_AUTOMATIC, GUN_FIREMODE_AUTOBURST)
@@ -97,7 +137,6 @@
 	accuracy_mult = 1.2
 	accuracy_mult_unwielded = 0.95
 	damage_mult = 1.1
-
 
 
 //-------------------------------------------------------
@@ -140,7 +179,7 @@
 
 /obj/item/weapon/gun/smg/mp7
 	name = "\improper MP27 submachinegun"
-	desc = "An archaic design going back hundreds of years, the MP27 was common in its day. Today it sees limited use as cheap computer-printed replicas or family heirlooms."
+	desc = "An archaic design going back hundreds of years, the MP27 was common in its day. Today it sees limited use as cheap computer-printed replicas or family heirlooms, though it somehow got into the hands of colonial rebels."
 	icon_state = "mp7"
 	item_state = "mp7"
 	caliber = "4.6x30mm" //codex
@@ -202,7 +241,7 @@
 
 /obj/item/weapon/gun/smg/ppsh
 	name = "\improper PPSh-17b submachinegun"
-	desc = "An unauthorized copy of a replica of a prototype submachinegun developed in a third world shit hole somewhere."
+	desc = "A replica of a 20th century USSR model submachinegun that many terrorist organizations had copied all over the years. Despite its small-hitting firepower, its reliablity, extreme longevity and high firepower rate proves useful for the hands of the user."
 	icon_state = "ppsh"
 	item_state = "ppsh"
 	caliber = "7.62x25mm" //codex
@@ -237,7 +276,7 @@
 
 /obj/item/weapon/gun/smg/uzi
 	name = "\improper GAL9 submachinegun"
-	desc = "A cheap, reliable design and manufacture make this ubiquitous submachinegun useful despite the age. Turn on burst mode for maximum firepower."
+	desc = "A cheap, reliable design and manufacture make this ubiquitous submachinegun useful despite the age. Put the fire mode to full auto for maximum firepower."
 	icon_state = "uzi"
 	item_state = "uzi"
 	caliber = "9x19mm Parabellum" //codex
@@ -263,7 +302,7 @@
 //FP9000 //Based on the FN P90
 
 /obj/item/weapon/gun/smg/p90
-	name = "\improper FN FP9000 Submachinegun"
+	name = "\improper FN FP9000 submachinegun"
 	desc = "An archaic design, but one that's stood the test of time. Fires fast armor piercing rounds."
 	icon_state = "FP9000"
 	item_state = "FP9000"

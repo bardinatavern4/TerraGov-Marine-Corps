@@ -50,8 +50,7 @@
 			to_chat(H, "<span class='danger'>You feel a powerful shock course through your body!</span>")
 			var/obj/item/clothing/gloves/G = H.gloves
 			if(G.siemens_coefficient)//not insulated
-				H.halloss += 10
-				H.stunned += 10
+				H.adjustStaminaLoss(200)
 				return
 	return ..(user)
 
@@ -310,16 +309,6 @@
 								"<span class='notice'>You finish repairing the airlock.</span>")
 			update_icon()
 
-
-	else if(isscrewdriver(I))
-		if(no_panel)
-			to_chat(user, "<span class='warning'>\The [src] has no panel to open!</span>")
-			return
-
-		TOGGLE_BITFIELD(machine_stat, PANEL_OPEN)
-		to_chat(user, "<span class='notice'>You [CHECK_BITFIELD(machine_stat, PANEL_OPEN) ? "open" : "close"] [src]'s panel.</span>")
-		update_icon()
-
 	else if(iswirecutter(I))
 		return attack_hand(user)
 
@@ -410,6 +399,21 @@
 
 	return TRUE
 
+/obj/machinery/door/airlock/screwdriver_act(mob/user, obj/item/I)
+	. = ..()
+	if(no_panel)
+		to_chat(user, "<span class='warning'>\The [src] has no panel to open!</span>")
+		return
+
+	machine_stat ^= PANEL_OPEN
+	if(machine_stat & PANEL_OPEN)
+		to_chat(user, "<span class='notice'>You open [src]'s panel.</span>")
+		playsound(loc, 'sound/items/screwdriver2.ogg', 25, 1)
+	else
+		to_chat(user, "<span class='notice'>You close [src]'s panel.</span>")
+		playsound(loc, 'sound/items/screwdriver.ogg', 25, 1)
+	update_icon()
+
 
 ///obj/machinery/door/airlock/phoron/attackby(C as obj, mob/user as mob)
 //	if(C)
@@ -448,8 +452,8 @@
 	for(var/turf/turf in locs)
 		for(var/mob/living/M in turf)
 			M.apply_damage(DOOR_CRUSH_DAMAGE, BRUTE)
-			M.set_stunned(5)
-			M.set_knocked_down(5)
+			M.Stun(10 SECONDS)
+			M.Knockdown(10 SECONDS)
 			if (iscarbon(M))
 				var/mob/living/carbon/C = M
 				var/datum/species/S = C.species
@@ -458,6 +462,7 @@
 			var/turf/location = src.loc
 			if(istype(location, /turf))
 				location.add_mob_blood(M)
+			UPDATEHEALTH(M)
 
 	use_power(360)	//360 W seems much more appropriate for an actuator moving an industrial door capable of crushing people
 	if(istype(src, /obj/machinery/door/airlock/glass))

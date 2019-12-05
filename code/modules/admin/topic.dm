@@ -62,7 +62,7 @@
 					status = "Unconscious"
 				if(DEAD)
 					status = "Dead"
-			health = "Oxy: [L.getOxyLoss()]  Tox: [L.getToxLoss()]  Fire: [L.getFireLoss()]  Brute: [L.getBruteLoss()]  Clone: [L.getCloneLoss()]  Brain: [L.getBrainLoss()]"
+			health = "Oxy: [L.getOxyLoss()]  Tox: [L.getToxLoss()]  Fire: [L.getFireLoss()]  Brute: [L.getBruteLoss()]  Clone: [L.getCloneLoss()]  Brain: [L.getBrainLoss()]  Stamina: [L.getStaminaLoss()]"
 
 		to_chat(usr, {"<span class='notice'><hr><b>Info about [M.real_name]:</b>
 Type: [M.type] | Gender: [M.gender] |[job ? " Job: [job]" : ""]
@@ -406,7 +406,7 @@ Status: [status ? status : "Unknown"] | Damage: [health ? health : "None"]
 
 		if(ishuman(M))
 			var/mob/living/carbon/human/H = M
-			H.put_in_hands(new /obj/item/reagent_container/food/snacks/cookie(M))
+			H.put_in_hands(new /obj/item/reagent_containers/food/snacks/cookie(M))
 			H.update_inv_r_hand()
 			H.update_inv_l_hand()
 		else
@@ -414,7 +414,7 @@ Status: [status ? status : "Unknown"] | Damage: [health ? health : "None"]
 				if(alert("Are you sure you want to spawn the cookie at observer location [AREACOORD(M.loc)]?", "Confirmation", "Yes", "No") != "Yes")
 					return
 			var/turf/T = get_turf(M)
-			new /obj/item/reagent_container/food/snacks/cookie(T)
+			new /obj/item/reagent_containers/food/snacks/cookie(T)
 
 		to_chat(M, "<span class='boldnotice'>Your prayers have been answered!! You received the best cookie!</span>")
 
@@ -429,14 +429,14 @@ Status: [status ? status : "Unknown"] | Damage: [health ? health : "None"]
 
 		if(ishuman(M))
 			var/mob/living/carbon/human/H = M
-			H.put_in_hands(new /obj/item/reagent_container/food/snacks/fortunecookie(M))
+			H.put_in_hands(new /obj/item/reagent_containers/food/snacks/fortunecookie(M))
 			H.update_inv_r_hand()
 			H.update_inv_l_hand()
 		else if(isobserver(M))
 			if(alert("Are you sure you want to spawn the fortune cookie at observer location [AREACOORD(M.loc)]?", "Confirmation", "Yes", "No") != "Yes")
 				return
 			var/turf/T = get_turf(M)
-			new /obj/item/reagent_container/food/snacks/fortunecookie(T)
+			new /obj/item/reagent_containers/food/snacks/fortunecookie(T)
 		else if(isxeno(M))
 			if(alert("Are you sure you want to tell the Xeno a Xeno tip?", "Confirmation", "Yes", "No") != "Yes")
 				return
@@ -2104,3 +2104,10 @@ Status: [status ? status : "Unknown"] | Damage: [health ? health : "None"]
 
 		log_admin("[key_name(usr)] changed [href_list["xeno"]] of [X] from [previous] to [change].")
 		message_admins("[ADMIN_TPMONTY(usr)] changed [href_list["xeno"]] of [ADMIN_TPMONTY(X)] from [previous] to [change].")
+	else if(href_list["adminapproval"])
+		var/approval_id = href_list["adminapproval"] // Already text at this point
+		if(GLOB.admin_approvals[approval_id] != -1)
+			to_chat(usr, "<span class='warning'>That approval has already been answered with '[GLOB.admin_approvals[approval_id]]'</span>")
+			return
+		GLOB.admin_approvals[approval_id] = href_list["option"]
+		message_admins("[key_name(usr)] answered '[href_list["option"]]' to the admin approval ([approval_id]).")

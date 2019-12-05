@@ -133,7 +133,10 @@ GLOBAL_LIST_INIT(pod_styles, list(\
 		if(effectGib)
 			L.adjustBruteLoss(5000)
 			L.gib()
+			continue
+
 		L.adjustBruteLoss(damage)
+		UPDATEHEALTH(L)
 
 	var/explosion_sum = B[1] + B[2] + B[3] + B[4]
 	if(explosion_sum != 0)
@@ -288,7 +291,7 @@ GLOBAL_LIST_INIT(pod_styles, list(\
 		L.forceMove(src)
 	if(pod.effectStun)
 		for(var/mob/living/M in get_turf(src))
-			M.stun(pod.landingDelay + 10)
+			M.Stun((pod.landingDelay + 10) * 20)
 	if(pod.effectStealth)
 		icon_state = ""
 	if(pod.fallDuration == initial(pod.fallDuration) && pod.landingDelay + pod.fallDuration < pod.fallingSoundLength)

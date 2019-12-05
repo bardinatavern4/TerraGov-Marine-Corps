@@ -66,7 +66,7 @@
 		return
 
 	var/mob/living/M = I.grabbed_thing
-	if(user.grab_level < GRAB_AGGRESSIVE)
+	if(user.grab_state < GRAB_AGGRESSIVE)
 		to_chat(user, "<span class='warning'>You need a better grip to do that!</span>")
 		return
 
@@ -120,7 +120,7 @@
 	update_icon()
 
 	var/totalslabs = 3
-	var/obj/item/reagent_container/food/snacks/meat/allmeat[totalslabs]
+	var/obj/item/reagent_containers/food/snacks/meat/allmeat[totalslabs]
 
 	if( istype(src.occupant, /mob/living/carbon/human/) )
 		var/mob/living/carbon/human/H = occupant
@@ -130,7 +130,7 @@
 		var/sourcetotalreagents = src.occupant.reagents.total_volume
 
 		for(var/i=1 to totalslabs)
-			var/obj/item/reagent_container/food/snacks/meat/human/newmeat = new
+			var/obj/item/reagent_containers/food/snacks/meat/human/newmeat = new
 			newmeat.name = sourcename + newmeat.name
 			newmeat.subjectname = sourcename
 			newmeat.subjectjob = sourcejob
@@ -161,7 +161,7 @@
 			sourcenutriment = C.nutrition / 30 // small animals don't have as much nutrition
 
 		for(var/i=1 to totalslabs)
-			var/obj/item/reagent_container/food/snacks/meat/newmeat = new
+			var/obj/item/reagent_containers/food/snacks/meat/newmeat = new
 			newmeat.name = "[sourcename]-[newmeat.name]"
 
 			newmeat.reagents.add_reagent(/datum/reagent/consumable/nutriment, sourcenutriment / totalslabs)

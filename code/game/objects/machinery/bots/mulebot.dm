@@ -639,8 +639,8 @@
 	var/mob/living/L = A
 	visible_message("<span class='warning'>[src] knocks over [L]!</span>")
 	L.stop_pulling()
-	L.stun(8)
-	L.knock_down(5)
+	L.Stun(16 SECONDS)
+	L.Knockdown(10 SECONDS)
 	L.lying = TRUE
 
 
@@ -657,7 +657,7 @@
 	H.apply_damage(0.5*damage, BRUTE, "r_leg")
 	H.apply_damage(0.5*damage, BRUTE, "l_arm")
 	H.apply_damage(0.5*damage, BRUTE, "r_arm")
-
+	UPDATEHEALTH(H)
 	H.add_splatter_floor(loc, 1)
 	bloodiness += 4
 

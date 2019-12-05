@@ -7,6 +7,7 @@
 	unload_sound = 'sound/weapons/guns/interact/pistol_unload.ogg'
 	reload_sound = 'sound/weapons/guns/interact/pistol_reload.ogg'
 	cocked_sound = 'sound/weapons/guns/interact/pistol_cocked.ogg'
+	muzzleflash_iconstate = "muzzle_flash_light"
 	load_method = MAGAZINE //codex
 	materials = list(/datum/material/metal = 2000)
 	flags_equip_slot = ITEM_SLOT_BELT
@@ -49,7 +50,7 @@
 
 /obj/item/weapon/gun/pistol/m4a3
 	name = "\improper M4A3 service pistol"
-	desc = "An M4A3 Colt Service Pistol, the standard issue sidearm of the TerraGov Marine Corps. Uses 9mm pistol rounds."
+	desc = "An M4A3 Colt Service Pistol, the standard issue sidearm of the TerraGov Marine Corps."
 	icon_state = "m4a3"
 	item_state = "m4a3"
 	caliber = "9x19mm Parabellum" //codex
@@ -67,7 +68,7 @@
 
 /obj/item/weapon/gun/pistol/m4a3/custom
 	name = "\improper M4A3 custom pistol"
-	desc = "An M4A3 Service Pistol, the standard issue sidearm of the TerraGov Marine Corps. Uses 9mm pistol rounds. This one has an ivory-colored grip and has a slide carefully polished yearly by a team of orphan children. Looks like it belongs to a low-ranking officer."
+	desc = "An M4A3 Service Pistol, the standard issue sidearm of the TerraGov Marine Corps. This one has an ivory-colored grip and has a slide carefully polished yearly by a team of orphan children. Looks like it belongs to a low-ranking officer."
 	icon_state = "m4a3c"
 	item_state = "m4a3c"
 
@@ -83,7 +84,7 @@
 
 /obj/item/weapon/gun/pistol/m1911
 	name = "\improper M1911 service pistol"
-	desc = "A standard M1911 chambered in .45. Has a smaller magazine capacity, but packs a better punch."
+	desc = "A standard M1911 chambered in .45 ACP. Has a smaller magazine capacity, but packs a better punch."
 	icon_state = "m1911"
 	item_state = "m1911"
 	caliber = ".45 ACP" //codex
@@ -121,7 +122,7 @@
 
 /obj/item/weapon/gun/pistol/b92fs
 	name = "\improper Beretta 92FS pistol"
-	desc = "A popular police firearm in the 20th century, often employed by hardboiled cops while confronting terrorists. A classic of its time, chambered in 9mm."
+	desc = "A popular police firearm in the 20th century, often employed by hardboiled cops while confronting terrorists. A classic of its time, chambered in 9x19mm."
 	icon_state = "b92fs"
 	item_state = "b92fs"
 	caliber = "9x19mm Parabellum" //codex
@@ -184,10 +185,11 @@
 
 /obj/item/weapon/gun/pistol/heavy
 	name = "\improper Desert Eagle"
-	desc = "A pistol chambered in.50ae that comes with a serious kick. This one is engraved, <i>'Peace through superior firepower.'</i>"
+	desc = "A magnum chambered in .50AE that comes with a serious kick. This one is engraved, <i>\"Peace through superior firepower\"</i>."
 	icon_state = "deagle"
 	item_state = "deagle"
-	caliber = ".50 AE" //codex
+	caliber = ".50 Action Express" //codex
+	muzzleflash_iconstate = "muzzle_flash_medium"
 	max_shells = 7 //codex
 	fire_sound = 'sound/weapons/guns/fire/deagle.ogg'
 	dry_fire_sound = 'sound/weapons/guns/fire/deagle_empty.ogg'
@@ -269,7 +271,7 @@
 
 /obj/item/weapon/gun/pistol/kt42
 	name = "\improper KT-42 automag"
-	desc = "The KT-42 Automag is an archaic but reliable design, going back many decades. There have been many versions and variations, but the 42 is by far the most common. You can't go wrong with this handcannon."
+	desc = "The KT-42 Automag is an archaic but reliable design, going back many decades. There have been many versions and variations, but the 42 model is by far the most common. You can't go wrong with this handcannon."
 	icon_state = "kt42"
 	item_state = "kt42"
 	caliber = ".44 magnum" //codex
@@ -346,7 +348,7 @@
 
 /obj/item/weapon/gun/pistol/vp70
 	name = "\improper 88 Mod 4 combat pistol"
-	desc = "A powerful sidearm issued mainly to Nanotrasen response teams, but issued to the TGMC in small numbers, based on the original VP70 more than a century ago. Fires 9mm armor piercing rounds and is capable of 3-round burst."
+	desc = "A powerful sidearm issued mainly to Nanotrasen private contractors, but issued to the TGMC in small numbers, based on the original VP70 more than a century ago. Fires 9mm armor piercing rounds and is capable of 3-round burst."
 	icon_state = "88m4"
 	item_state = "88m4"
 	caliber = "9x19mm Parabellum" //codex
@@ -436,6 +438,7 @@ It is a modified Beretta 93R, and can fire three round burst or single fire. Whe
 	desc = "A powerful sidearm issued mainly to highly trained elite assassin necro-cyber-agents."
 	icon_state = "c70"
 	item_state = "c70"
+	muzzleflash_iconstate = "muzzle_flash_medium"
 	caliber = ".70 Mankey" //codex
 	max_shells = 300 //codex
 	current_mag = /obj/item/ammo_magazine/pistol/chimp
@@ -453,8 +456,8 @@ It is a modified Beretta 93R, and can fire three round burst or single fire. Whe
 
 
 /obj/item/weapon/gun/pistol/knife
-	name = "\improper Knife"
-	desc = "There are a surprisingly large amount of attachment points on this.... knife."
+	name = "\improper M6 'Eclipse Raider' ballistic knife"
+	desc = "The back issue survival knife issued to TerraGov Marine Corps soldiers. There are a surprisingly large amount of attachment points on this... knife."
 	icon = 'icons/obj/items/weapons.dmi'
 	icon_state = "elite_knife"
 	reload_sound = 'sound/weapons/flipblade.ogg'

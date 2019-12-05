@@ -127,13 +127,13 @@
 		var/atom/movable/thing = i
 		if(thing.Cross(mover))
 			continue
-		switch(SEND_SIGNAL(mover, COMSIG_MOVABLE_PREBUMP_MOVABLE, thing))
-			if(COMPONENT_MOVABLE_PREBUMP_STOPPED)
-				return FALSE //Stopped, bump no longer necessary.
-			if(COMPONENT_MOVABLE_PREBUMP_PLOWED)
-				continue //We've plowed through.
-			if(COMPONENT_MOVABLE_PREBUMP_ENTANGLED)
-				return TRUE //We've entered the tile and gotten entangled inside it.
+		var/signalreturn = SEND_SIGNAL(mover, COMSIG_MOVABLE_PREBUMP_MOVABLE, thing)
+		if(signalreturn & COMPONENT_MOVABLE_PREBUMP_STOPPED)
+			return FALSE //Stopped, bump no longer necessary.
+		if(signalreturn & COMPONENT_MOVABLE_PREBUMP_PLOWED)
+			continue //We've plowed through.
+		if(signalreturn & COMPONENT_MOVABLE_PREBUMP_ENTANGLED)
+			return TRUE //We've entered the tile and gotten entangled inside it.
 		if(QDELETED(mover)) //Mover deleted from Cross/CanPass, do not proceed.
 			return FALSE
 		else if(!firstbump || ((thing.layer > firstbump.layer || thing.flags_atom & ON_BORDER) && !(firstbump.flags_atom & ON_BORDER)))
@@ -156,6 +156,11 @@
 		var/atom/movable/thing = i
 		if(!thing.Uncross(mover, newloc))
 			if(thing.flags_atom & ON_BORDER)
+				var/signalreturn = SEND_SIGNAL(mover, COMSIG_MOVABLE_PREBUMP_EXIT_MOVABLE, thing)
+				if(signalreturn & COMPONENT_MOVABLE_PREBUMP_STOPPED)
+					return FALSE
+				if(signalreturn & COMPONENT_MOVABLE_PREBUMP_PLOWED)
+					continue // no longer in the way
 				mover.Bump(thing)
 				return FALSE
 		if(QDELETED(mover))
@@ -511,6 +516,10 @@ GLOBAL_LIST_INIT(unweedable_areas, typecacheof(list(
 		if(istype(O, /obj/effect/alien/egg))
 			if(!silent)
 				to_chat(builder, "<span class='warning'>There's already an egg.</span>")
+			return FALSE
+		if(istype(O, /obj/effect/alien/resin/trap))
+			if(!silent)
+				to_chat(builder, "<span class='warning'>There is already a trap here!</span>")
 			return FALSE
 		if(istype(O, /obj/structure/mineral_door) || istype(O, /obj/effect/alien/resin))
 			has_obstacle = TRUE

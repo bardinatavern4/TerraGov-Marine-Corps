@@ -20,7 +20,7 @@
 	var/list/formatted = list()
 	for(var/job in jobs)
 		formatted.Add(list(list(
-			"display_name" = oldreplacetext(job, " ", "&nbsp"),
+			"display_name" = replacetext(job, " ", "&nbsp"),
 			"target_rank" = get_target_rank(),
 			"job" = job)))
 
@@ -71,10 +71,23 @@
 		C.forceMove(src)
 		modify = C
 
-	SSnano.update_uis(src)
+	updateUsrDialog()
 	attack_hand(user)
 
+/obj/machinery/computer/card/attack_hand(mob/living/user)
+	if(!ishuman(user))
+		return ..()
+	var/mob/living/carbon/human/H = user
+	if(H.wear_id)
+		return ..()
+	var/obj/item/card/id/newid = new(H)
+	newid.access = list(ACCESS_IFF_MARINE)
+	newid.assignment = "Passenger"
+	newid.registered_name = H.real_name
 
+	H.equip_to_slot(newid, SLOT_WEAR_ID)
+
+/*
 /obj/machinery/computer/card/ui_interact(mob/user, ui_key="main", datum/nanoui/ui = null, force_open = 1)
 	var/data[0]
 	data["src"] = "\ref[src]"
@@ -105,7 +118,7 @@
 			for(var/access in get_region_accesses(i))
 				if (get_access_desc(access))
 					accesses.Add(list(list(
-						"desc" = oldreplacetext(get_access_desc(access), " ", "&nbsp"),
+						"desc" = replacetext(get_access_desc(access), " ", "&nbsp"),
 						"ref" = access,
 						"allowed" = (access in modify.access) ? 1 : 0)))
 
@@ -266,7 +279,7 @@
 		modify.name = text("[modify.registered_name]'s ID Card ([modify.assignment])")
 
 	return 1
-
+*/
 /obj/machinery/computer/card/centcom
 	name = "CentCom Identification Computer"
 	circuit = "/obj/item/circuitboard/computer/card/centcom"

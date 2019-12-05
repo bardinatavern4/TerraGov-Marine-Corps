@@ -4,6 +4,7 @@
 	var/votable = TRUE
 	var/probability = 0
 	var/required_players = 0
+	var/squads_max_number = 4
 
 	var/round_finished
 	var/list/round_end_states = list()
@@ -27,6 +28,8 @@
 	var/xeno_required_num = 1 // Number of xenos required to start
 	var/xeno_starting_num // Number of xenos given at start
 	var/list/xenomorphs = list()
+	var/latejoin_larvapoints		= 0
+	var/latejoin_larvapoints_required = 0 //logically never 0 in use, overriden by children/config
 
 /datum/game_mode/New()
 	initialize_emergency_calls()
@@ -36,13 +39,20 @@
 	return TRUE
 
 
-/datum/game_mode/proc/can_start()
-	if(!(config_tag in SSmapping.configs[GROUND_MAP].gamemodes))
+/datum/game_mode/proc/can_start(bypass_checks = FALSE)
+	if(!(config_tag in SSmapping.configs[GROUND_MAP].gamemodes) && !bypass_checks)
 		log_world("attempted to start [src.type] on "+SSmapping.configs[GROUND_MAP].map_name+" which doesn't support it.")
 		// start a gamemode vote, in theory this should never happen.
 		addtimer(CALLBACK(SSvote, /datum/controller/subsystem/vote.proc/initiate_vote, "gamemode", "SERVER"), 10 SECONDS)
 		return FALSE
-	if(GLOB.ready_players < required_players)
+	if(GLOB.ready_players < required_players && !bypass_checks)
+		to_chat(world, "<b>Unable to start [name].</b> Not enough players, [required_players] players needed.")
+		return FALSE
+	if(!set_valid_job_types() && !bypass_checks)
+		return FALSE
+	if(!set_valid_squads() && !bypass_checks)
+		return FALSE
+	if(!initialize_scales() && !bypass_checks)
 		return FALSE
 	return TRUE
 
@@ -106,7 +116,6 @@
 	for(var/i in GLOB.new_player_list)
 		var/mob/new_player/player = i
 		if(player.ready && player.mind)
-			GLOB.joined_player_list += player.ckey
 			player.create_character(FALSE)
 		else
 			player.new_player_panel()
@@ -459,7 +468,7 @@ Sensors indicate [numXenosShip ? "[numXenosShip]" : "no"] unknown lifeform signa
 			GLOB.xeno_spawn_protection_locations.len--
 			new /obj/effect/forcefield/fog(T)
 			stoplag()
-		addtimer(CALLBACK(src, .proc/remove_fog), 25 MINUTES + SSticker.round_start_time + rand(-5 MINUTES, 5 MINUTES))
+
 
 /datum/game_mode/proc/end_of_round_deathmatch()
 	var/list/spawns = GLOB.deathmatch.Copy()
@@ -516,7 +525,7 @@ Sensors indicate [numXenosShip ? "[numXenosShip]" : "no"] unknown lifeform signa
 		else if(ishuman(L))
 			var/mob/living/carbon/human/H = L
 			if(!H.w_uniform)
-				var/job = pick(/datum/job/clf/leader, /datum/job/upp/commando/leader, /datum/job/freelancer/leader)
+				var/job = pick(/datum/job/clf/leader, /datum/job/freelancer/leader, /datum/job/upp/leader, /datum/job/som/leader, /datum/job/pmc/leader, /datum/job/freelancer/standard, /datum/job/som/standard, /datum/job/clf/standard)
 				var/datum/job/J = SSjob.GetJobType(job)
 				J.assign_equip(H)
 				H.regenerate_icons()
@@ -535,7 +544,7 @@ Sensors indicate [numXenosShip ? "[numXenosShip]" : "no"] unknown lifeform signa
 	M.transfer_to(H, TRUE)
 	H.client.prefs.copy_to(H)
 
-	var/survivor_job = pick(subtypesof(/datum/job/survivor))
+	var/survivor_job = /datum/job/rambosurvivor/generic
 	var/datum/job/J = new survivor_job
 
 	J.assign_equip(H)
@@ -675,13 +684,13 @@ Sensors indicate [numXenosShip ? "[numXenosShip]" : "no"] unknown lifeform signa
 			to_chat(player, output)
 
 
-/datum/game_mode/proc/count_humans_and_xenos(list/z_levels = SSmapping.levels_by_any_trait(list(ZTRAIT_MARINE_MAIN_SHIP, ZTRAIT_GROUND, ZTRAIT_RESERVED)), count_ssd = FALSE)
+/datum/game_mode/proc/count_humans_and_xenos(list/z_levels = SSmapping.levels_by_any_trait(list(ZTRAIT_MARINE_MAIN_SHIP, ZTRAIT_GROUND, ZTRAIT_RESERVED)), count_flags)
 	var/num_humans = 0
 	var/num_xenos = 0
 
 	for(var/i in GLOB.alive_human_list)
 		var/mob/living/carbon/human/H = i
-		if(!H.client && !count_ssd)
+		if(count_flags & COUNT_IGNORE_HUMAN_SSD && !H.client)
 			continue
 		if(H.status_flags & XENO_HOST)
 			continue
@@ -691,13 +700,55 @@ Sensors indicate [numXenosShip ? "[numXenosShip]" : "no"] unknown lifeform signa
 
 	for(var/i in GLOB.alive_xeno_list)
 		var/mob/living/carbon/xenomorph/X = i
-		if(!X.client && !count_ssd)
+		if(count_flags & COUNT_IGNORE_XENO_SSD && !X.client)
+			continue
+		if(count_flags & COUNT_IGNORE_XENO_SPECIAL_AREA && is_xeno_in_forbidden_zone(X))
 			continue
 		if((!(X.z in z_levels) && !X.is_ventcrawling) || isspaceturf(X.loc))
 			continue
 		num_xenos++
 
 	return list(num_humans, num_xenos)
+
+/datum/game_mode/proc/get_total_joblarvaworth(list/z_levels = SSmapping.levels_by_any_trait(list(ZTRAIT_MARINE_MAIN_SHIP, ZTRAIT_GROUND, ZTRAIT_RESERVED)), count_flags)
+	. = 0
+
+	for(var/i in GLOB.alive_human_list)
+		var/mob/living/carbon/human/H = i
+		var/datum/job/job = SSjob.GetJob(H.job)
+		if(count_flags & COUNT_IGNORE_HUMAN_SSD && !H.client)
+			continue
+		if(H.status_flags & XENO_HOST)
+			continue
+		if(!(H.z in z_levels) || isspaceturf(H.loc))
+			continue
+		. += job.larvaworth
+
+/datum/game_mode/proc/balance_scales()
+	var/datum/hive_status/normal/xeno_hive = GLOB.hive_datums[XENO_HIVE_NORMAL]
+	var/num_xenos = xeno_hive.get_total_xeno_number() - length(xeno_hive.get_ssd_xenos()) + xeno_hive.stored_larva
+	latejoin_larvapoints = (get_total_joblarvaworth() - (num_xenos * latejoin_larvapoints_required)) / latejoin_larvapoints_required
+	if(!num_xenos) //Distress ends here
+		if(!length(GLOB.xeno_resin_silos)) //Crash ends here
+			check_finished(TRUE)
+			return //RIP benos.
+		if(xeno_hive.stored_larva)
+			return //No need for respawns nor to end the game. They can use their burrowed larvas.
+		xeno_hive.stored_larva += max(1, round(latejoin_larvapoints)) //At least one
+		return 
+	if(latejoin_larvapoints < 1)
+		return //Things are balanced, no burrowed needed
+	xeno_hive.stored_larva += round(latejoin_larvapoints) //however many burrowed they can afford to buy, floored
+
+/datum/game_mode/proc/is_xeno_in_forbidden_zone(mob/living/carbon/xenomorph/xeno)
+	return FALSE
+
+/datum/game_mode/distress/is_xeno_in_forbidden_zone(mob/living/carbon/xenomorph/xeno)
+	if(round_stage == DISTRESS_DROPSHIP_CRASHED)
+		return FALSE
+	if(isxenoresearcharea(get_area(xeno)))
+		return TRUE
+	return FALSE
 
 
 /datum/game_mode/proc/remove_fog()
@@ -713,20 +764,22 @@ Sensors indicate [numXenosShip ? "[numXenosShip]" : "no"] unknown lifeform signa
 /datum/game_mode/proc/mode_new_player_panel(mob/new_player/NP)
 
 	var/output = "<div align='center'>"
-	output += "<p><a href='byond://?src=[REF(NP)];lobby_choice=show_preferences'>Setup Character</A></p>"
+	output += "<br><i>You are part of the <b>TerraGov Marine Corps</b>, a military branch of the TerraGov council.</i>"
+	output +="<hr>"
+	output += "<p><a href='byond://?src=[REF(NP)];lobby_choice=show_preferences'>Setup Character</A> | <a href='byond://?src=[REF(NP)];lobby_choice=lore'>Background</A><br><br><a href='byond://?src=[REF(NP)];lobby_choice=observe'>Observe</A></p>"
+	output +="<hr>"
 
 	if(SSticker.current_state <= GAME_STATE_PREGAME)
 		output += "<p>\[ [NP.ready? "<b>Ready</b>":"<a href='byond://?src=\ref[src];lobby_choice=ready'>Ready</a>"] | [NP.ready? "<a href='byond://?src=[REF(NP)];lobby_choice=ready'>Not Ready</a>":"<b>Not Ready</b>"] \]</p>"
 	else
-		output += "<a href='byond://?src=[REF(NP)];lobby_choice=manifest'>View the Crew Manifest</A><br><br>"
+		output += "<a href='byond://?src=[REF(NP)];lobby_choice=manifest'>View the Crew Manifest</A><br>"
 		output += "<p><a href='byond://?src=[REF(NP)];lobby_choice=late_join'>Join the TGMC!</A></p>"
 
-	output += "<p><a href='byond://?src=[REF(NP)];lobby_choice=observe'>Observe</A></p>"
-
 	output += append_player_votes_link(NP)
+
 	output += "</div>"
 
-	var/datum/browser/popup = new(NP, "playersetup", "<div align='center'>New Player Options</div>", 240, 300)
+	var/datum/browser/popup = new(NP, "playersetup", "<div align='center'>Welcome to TGMC[SSmapping?.configs ? " - [SSmapping.configs[SHIP_MAP].map_name]" : ""]</div>", 300, 375)
 	popup.set_window_options("can_close=0")
 	popup.set_content(output)
 	popup.open(FALSE)
@@ -764,10 +817,17 @@ Sensors indicate [numXenosShip ? "[numXenosShip]" : "no"] unknown lifeform signa
 	if(!GLOB.enter_allowed)
 		to_chat(usr, "<span class='warning'>Spawning currently disabled, please observe.<spawn>")
 		return FALSE
+	if(!NP.client.prefs.random_name)
+		var/datum/job/job = SSjob.GetJob(rank)
+		var/name_to_check = NP.client.prefs.real_name
+		if(job.job_flags & JOB_FLAG_SPECIALNAME)
+			name_to_check = job.get_special_name(NP.client)
+		if(CONFIG_GET(flag/prevent_dupe_names) && GLOB.real_names_joined.Find(name_to_check))
+			to_chat(usr, "<span class='warning'>Someone has already joined the round with this character name. Please pick another.<spawn>")
+			return FALSE
 	if(!SSjob.AssignRole(NP, rank, TRUE))
 		to_chat(usr, "<span class='warning'>Failed to assign selected role.<spawn>")
 		return FALSE
-
 	return TRUE
 
 
@@ -793,7 +853,7 @@ Sensors indicate [numXenosShip ? "[numXenosShip]" : "no"] unknown lifeform signa
 	qdel(NP)
 
 
-/datum/game_mode/proc/handle_late_spawn(mob/C)
+/datum/game_mode/proc/handle_late_spawn(mob/living/late_spawner)
 	return
 
 
@@ -838,12 +898,73 @@ Sensors indicate [numXenosShip ? "[numXenosShip]" : "no"] unknown lifeform signa
 		to_chat(xeno_candidate, "<span class='warning'>That xenomorph has been occupied.</span>")
 		return FALSE
 
-	if(DEATHTIME_CHECK(xeno_candidate))
-		DEATHTIME_MESSAGE(xeno_candidate)
-		return FALSE
+	if(XENODEATHTIME_CHECK(xeno_candidate))
+		if(check_other_rights(xeno_candidate.client, R_ADMIN, FALSE))
+			if(alert(xeno_candidate, "You wouldn't normally qualify for this respawn. Are you sure you want to bypass it with your admin powers?", "Bypass Respawn", "Yes", "No") != "Yes")
+				XENODEATHTIME_MESSAGE(xeno_candidate)
+				return FALSE
+		else
+			XENODEATHTIME_MESSAGE(xeno_candidate)
+			return FALSE
 
-	if(new_xeno.afk_timer_id) //We do not want to occupy them if they've only been gone for a little bit.
+	if(new_xeno.afk_status == MOB_RECENTLY_DISCONNECTED) //We do not want to occupy them if they've only been gone for a little bit.
 		to_chat(xeno_candidate, "<span class='warning'>That player hasn't been away long enough. Please wait [round(timeleft(new_xeno.afk_timer_id) * 0.1)] second\s longer.</span>")
 		return FALSE
 
 	return new_xeno
+
+/datum/game_mode/proc/set_valid_job_types()
+	if(!SSjob?.initialized)
+		to_chat(world, "<span class='boldnotice'>Error setting up valid jobs, no job subsystem found initialized.</span>")
+		CRASH("Error setting up valid jobs, no job subsystem found initialized.")
+	if(!length(valid_job_types))
+		SSjob.active_occupations = SSjob.occupations
+		return TRUE
+	SSjob.active_occupations.Cut()
+	for(var/j in SSjob.occupations)
+		var/datum/job/job = j
+		if(!valid_job_types[job.type])
+			job.total_positions = 0
+			continue
+		job.total_positions = valid_job_types[job.type]
+		SSjob.active_occupations += job
+	if(!length(SSjob.active_occupations))
+		to_chat(world, "<span class='boldnotice'>Error, game mode has only invalid jobs assigned.</span>")
+		return FALSE
+	return TRUE
+
+/datum/game_mode/proc/set_valid_squads()
+	var/max_squad_num = min(squads_max_number, SSmapping.configs[SHIP_MAP].squads_max_num)
+	if(max_squad_num >= length(SSjob.squads))
+		SSjob.active_squads = SSjob.squads
+		return TRUE
+	if(max_squad_num == 0)
+		return TRUE
+	var/list/preferred_squads = shuffle(SSjob.squads)
+	for(var/s in SSjob.squads)
+		preferred_squads[s] = 1
+	if(!length(preferred_squads))
+		to_chat(world, "<span class='boldnotice'>Error, no squads found.</span>")
+		return FALSE
+	for(var/i in GLOB.new_player_list)
+		var/mob/new_player/player = i
+		if(!player.ready || !player.client?.prefs?.preferred_squad)
+			continue
+		var/squad_choice = player.client.prefs.preferred_squad
+		if(squad_choice == "None")
+			continue
+		if(!preferred_squads[squad_choice])
+			stack_trace("[player.client] has in its prefs [squad_choice] for a squad. Not valid.")
+			continue
+		preferred_squads[squad_choice]++
+	sortTim(preferred_squads, cmp=/proc/cmp_numeric_dsc, associative = TRUE)
+
+	preferred_squads.len = max_squad_num
+	for(var/s in preferred_squads) //Back from weight to type.
+		preferred_squads[s] = SSjob.squads[s]
+	SSjob.active_squads = preferred_squads.Copy()
+
+	return TRUE
+
+/datum/game_mode/proc/initialize_scales()
+	return SSjob.initialize_job_scales()

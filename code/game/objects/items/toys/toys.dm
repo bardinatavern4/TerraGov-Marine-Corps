@@ -53,7 +53,7 @@
 /obj/item/toy/balloon/attackby(obj/item/I, mob/user, params)
 	. = ..()
 
-	if(istype(I, /obj/item/reagent_container/glass))
+	if(istype(I, /obj/item/reagent_containers/glass))
 		if(!I.reagents)
 			return
 
@@ -507,11 +507,11 @@
 			return
 
 		var/mob/living/L = G.grabbed_thing
-		if(user.grab_level < GRAB_AGGRESSIVE)
+		if(user.grab_state < GRAB_AGGRESSIVE)
 			to_chat(user, "<span class='warning'>You need a better grip to do that!</span>")
 			return
 		L.forceMove(loc)
-		L.knock_down(5)
+		L.Knockdown(10 SECONDS)
 		for(var/obj/machinery/scoreboard/X in GLOB.machines)
 			if(X.id == id)
 				X.score(side, 3)// 3 points for dunking a mob

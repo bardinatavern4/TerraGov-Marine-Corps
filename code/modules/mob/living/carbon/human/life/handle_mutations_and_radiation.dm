@@ -22,7 +22,7 @@
 		if(prob(5) && prob(100 * RADIATION_SPEED_COEFFICIENT))
 			radiation -= 5 * RADIATION_SPEED_COEFFICIENT
 			to_chat(src, "<span class='warning'>You feel weak.</span>")
-			knock_down(3)
+			Knockdown(60)
 			if(!lying)
 				emote("collapse")
 		if(prob(5) && prob(100 * RADIATION_SPEED_COEFFICIENT) && ishumanbasic(src)) //Apes go bald
@@ -36,7 +36,7 @@
 		radiation -= 1 * RADIATION_SPEED_COEFFICIENT
 		damage = 3
 		if(prob(5))
-			take_overall_damage(0, 5 * RADIATION_SPEED_COEFFICIENT, used_weapon = "Radiation Burns")
+			take_overall_damage(0, 5 * RADIATION_SPEED_COEFFICIENT)
 		if(prob(1))
 			to_chat(src, "<span class='warning'>You feel strange!</span>")
 			adjustCloneLoss(5 * RADIATION_SPEED_COEFFICIENT)
