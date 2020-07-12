@@ -28,7 +28,8 @@ params
 			active_admins.Add(C)
 
 	if(!length(active_admins)) // If no admin just return the default option
-		log_admin("Admin Approval: '[admin_message]' was marked [default_option] due to lack of online admin.")
+		log_admin("Admin Approval: '[admin_message]' was answered with [default_option] due to lack of online admin.")
+		send2tgs_adminless_only("Approval", "'[admin_message]' was answered with [default_option] due to lack of online admin")
 		return
 
 	var/approval_id = num2text(UNIQUEID)
@@ -36,7 +37,7 @@ params
 		CRASH("approval_id: [approval_id] is already in use.")
 
 	GLOB.admin_approvals[approval_id] = -1
-	for(var/client/C in GLOB.admins)
+	for(var/client/C in active_admins)
 		var/ref = "[REF(C.holder)];[HrefToken()]"
 		var/admin_specific_options = ""
 		for(var/opt in options)

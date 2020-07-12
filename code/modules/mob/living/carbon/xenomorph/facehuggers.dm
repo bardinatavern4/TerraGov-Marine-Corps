@@ -16,7 +16,7 @@
 	w_class = WEIGHT_CLASS_TINY //Note: can be picked up by aliens unlike most other items of w_class below 4
 	flags_inventory = COVEREYES|ALLOWINTERNALS|COVERMOUTH|ALLOWREBREATH
 	flags_armor_protection = FACE|EYES
-	flags_atom = NONE
+	flags_atom = CRITICAL_ATOM
 	flags_item = NOBLUDGEON
 	throw_range = 1
 	layer = FACEHUGGER_LAYER
@@ -136,7 +136,7 @@
 		return
 	Die()
 
-/obj/item/clothing/mask/facehugger/bullet_act(obj/item/projectile/P)
+/obj/item/clothing/mask/facehugger/bullet_act(obj/projectile/P)
 	..()
 	if(P.ammo.flags_ammo_behavior & AMMO_XENO)
 		return FALSE //Xeno spits ignore huggers.
@@ -203,6 +203,7 @@
 	return TRUE
 
 /obj/item/clothing/mask/facehugger/Crossed(atom/target)
+	. = ..()
 	if(stat == CONSCIOUS)
 		HasProximity(target)
 
@@ -331,7 +332,7 @@
 
 /obj/item/clothing/mask/facehugger/proc/Attach(mob/living/carbon/M)
 
-	throwing = FALSE
+	set_throwing(FALSE)
 	leaping = FALSE
 	update_icon()
 

@@ -94,7 +94,7 @@
 		if(health <= 0)
 			death()
 		else
-			stat = CONSCIOUS
+			set_stat(CONSCIOUS)
 	med_hud_set_status()
 
 
@@ -178,7 +178,7 @@
 		animate(src, transform = ntransform, time = 2, easing = EASE_IN|EASE_OUT)
 
 
-/mob/living/simple_animal/bullet_act(obj/item/projectile/Proj)
+/mob/living/simple_animal/bullet_act(obj/projectile/Proj)
 	if(!Proj || Proj.damage <= 0)
 		return FALSE
 
@@ -240,16 +240,17 @@
 
 
 /mob/living/simple_animal/ex_act(severity)
-	flash_eyes()
+	flash_act()
 
 	switch(severity)
-		if(1)
-			adjustBruteLoss(500)
+		if(EXPLODE_DEVASTATE)
 			gib()
-		if(2)
+		if(EXPLODE_HEAVY)
 			adjustBruteLoss(60)
-		if(3)
+			UPDATEHEALTH(src)
+		if(EXPLODE_LIGHT)
 			adjustBruteLoss(30)
+			UPDATEHEALTH(src)
 
 
 /mob/living/simple_animal/get_idcard(hand_first)

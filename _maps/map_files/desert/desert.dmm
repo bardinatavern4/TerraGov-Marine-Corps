@@ -267,7 +267,7 @@
 /turf/open/floor,
 /area/storage/testroom)
 "aW" = (
-/obj/effect/landmark/start/xeno_spawn,
+/obj/effect/landmark/start/job/xenomorph,
 /turf/open/floor/plating/ground,
 /area/desert/hive)
 "aX" = (
@@ -388,7 +388,6 @@
 "bq" = (
 /obj/machinery/door/airlock/colony/engineering{
 	name = "\improper Maintenance Airlock";
-	icon_state = "door_closed";
 	dir = 1
 	},
 /obj/structure/cable/yellow{
@@ -599,7 +598,6 @@
 	},
 /obj/structure/flora/pottedplant,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 4
 	},
 /area/desert/interior/main_building)
@@ -701,7 +699,6 @@
 "cp" = (
 /obj/machinery/door/airlock/colony/engineering{
 	name = "\improper Maintenance Airlock";
-	icon_state = "door_closed";
 	dir = 1
 	},
 /turf/open/floor/tile/dark,
@@ -727,7 +724,6 @@
 "cs" = (
 /obj/machinery/vending/snack,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 1
 	},
 /area/desert/interior/main_building)
@@ -752,7 +748,6 @@
 /area/shuttle/drop1/lz1)
 "cw" = (
 /obj/machinery/door/airlock/multi_tile/mainship/generic{
-	icon_state = "door_closed";
 	dir = 2
 	},
 /turf/open/floor/tile/white,
@@ -771,7 +766,6 @@
 /area/desert/interior/command/office)
 "cz" = (
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 1
 	},
 /area/desert/interior/main_building)
@@ -821,7 +815,6 @@
 /area/desert/interior/command/office)
 "cJ" = (
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 4
 	},
 /area/desert/interior/main_building)
@@ -954,7 +947,6 @@
 "cY" = (
 /obj/structure/flora/pottedplant,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 6
 	},
 /area/desert/interior/main_building)
@@ -970,9 +962,8 @@
 	},
 /area/shuttle/drop1/lz1)
 "db" = (
-/turf/open/floor{
-	dir = 2;
-	icon_state = "whitegreen"
+/turf/open/floor/tile/green/whitegreen{
+	dir = 2
 	},
 /area/desert/interior/main_building)
 "dc" = (
@@ -1088,7 +1079,6 @@
 "dt" = (
 /obj/machinery/door/airlock/colony/engineering{
 	name = "\improper Maintenance Airlock";
-	icon_state = "door_closed";
 	dir = 1
 	},
 /obj/structure/cable/yellow{
@@ -1324,9 +1314,7 @@
 /turf/closed/wall/r_wall,
 /area/desert/interior/shipping/east)
 "ei" = (
-/obj/structure/flora/pottedplant{
-	icon_state = "plant-21"
-	},
+/obj/structure/flora/pottedplant/twentyone,
 /obj/structure/cable/yellow{
 	d1 = 1;
 	d2 = 4;
@@ -1456,7 +1444,6 @@
 	dir = 4
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 5
 	},
 /area/desert/interior/main_building)
@@ -1502,8 +1489,7 @@
 	icon_state = "pipe11-2";
 	dir = 1
 	},
-/obj/machinery/door/airlock/mainship/command/CPToffice{
-	icon_state = "door_closed";
+/obj/machinery/door/airlock/mainship/command/free_access{
 	dir = 2
 	},
 /obj/structure/cable/yellow{
@@ -1536,7 +1522,6 @@
 	},
 /obj/machinery/door/airlock/colony/engineering{
 	name = "\improper Storage";
-	icon_state = "door_closed";
 	dir = 2
 	},
 /turf/open/floor/plating,
@@ -1565,7 +1550,6 @@
 "eN" = (
 /obj/structure/flora/pottedplant,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 9
 	},
 /area/desert/interior/main_building)
@@ -1574,12 +1558,11 @@
 	dir = 1
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 1
 	},
 /area/desert/interior/main_building)
 "eP" = (
-/obj/effect/landmark/start/surv_spawn,
+/obj/effect/landmark/start/job/survivor,
 /turf/open/floor/tile/white,
 /area/desert/interior/main_building)
 "eQ" = (
@@ -1594,7 +1577,6 @@
 	dir = 4
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 6
 	},
 /area/desert/interior/main_building)
@@ -1630,21 +1612,18 @@
 "eX" = (
 /obj/machinery/vending/cola,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 1
 	},
 /area/desert/interior/main_building)
 "eY" = (
 /obj/machinery/vending/coffee,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 1
 	},
 /area/desert/interior/main_building)
 "eZ" = (
 /obj/structure/flora/pottedplant,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 5
 	},
 /area/desert/interior/main_building)
@@ -1686,7 +1665,6 @@
 /area/shuttle/drop1/lz1)
 "ff" = (
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 8
 	},
 /area/desert/interior/main_building)
@@ -1724,7 +1702,6 @@
 "fk" = (
 /obj/structure/flora/pottedplant,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 10
 	},
 /area/desert/interior/main_building)
@@ -1783,7 +1760,6 @@
 	icon_state = "4-8"
 	},
 /turf/open/floor/tile/whiteyellow/corner{
-	icon_state = "whiteyellowcorner";
 	dir = 8
 	},
 /area/desert/interior/main_building)
@@ -1804,14 +1780,12 @@
 /area/desert/interior/medbay)
 "fs" = (
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 4
 	},
 /area/desert/interior/toilet)
 "ft" = (
 /obj/machinery/atmospherics/pipe/simple/supply/hidden,
-/obj/machinery/door/airlock/mainship/medical{
-	icon_state = "door_closed";
+/obj/machinery/door/airlock/mainship/medical/free_access{
 	dir = 1
 	},
 /obj/structure/cable/yellow{
@@ -1824,7 +1798,6 @@
 "fu" = (
 /obj/structure/flora/pottedplant,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 8
 	},
 /area/desert/interior/main_building)
@@ -1833,8 +1806,7 @@
 /area/desert/interior/science)
 "fw" = (
 /obj/machinery/atmospherics/pipe/simple/supply/hidden,
-/obj/machinery/door/airlock/mainship/research{
-	icon_state = "door_closed";
+/obj/machinery/door/airlock/mainship/research/free_access{
 	dir = 2
 	},
 /obj/structure/cable/yellow{
@@ -1885,7 +1857,6 @@
 "fE" = (
 /obj/structure/table,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 8
 	},
 /area/desert/interior/main_building)
@@ -1911,7 +1882,6 @@
 	},
 /obj/structure/table,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 4
 	},
 /area/desert/interior/main_building)
@@ -2003,7 +1973,6 @@
 "fV" = (
 /obj/structure/bed/chair,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 8
 	},
 /area/desert/interior/main_building)
@@ -2019,7 +1988,6 @@
 	},
 /obj/structure/bed/chair,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 4
 	},
 /area/desert/interior/main_building)
@@ -2106,7 +2074,6 @@
 	icon_state = "1-2"
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 4
 	},
 /area/desert/interior/main_building)
@@ -2191,7 +2158,6 @@
 	dir = 8
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 8
 	},
 /area/desert/interior/main_building)
@@ -2221,8 +2187,7 @@
 /turf/open/floor/tile/white,
 /area/desert/interior/medbay)
 "gD" = (
-/obj/machinery/door/airlock/mainship/research{
-	icon_state = "door_closed";
+/obj/machinery/door/airlock/mainship/research/free_access{
 	dir = 2
 	},
 /turf/open/floor/tile/white,
@@ -2329,7 +2294,6 @@
 	dir = 4
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 8
 	},
 /area/desert/interior/main_building)
@@ -2348,7 +2312,6 @@
 	},
 /obj/structure/bed/chair,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 4
 	},
 /area/desert/interior/main_building)
@@ -2379,7 +2342,6 @@
 "hc" = (
 /obj/machinery/door/airlock/colony/engineering{
 	name = "\improper Maintenance Airlock";
-	icon_state = "door_closed";
 	dir = 1
 	},
 /obj/structure/cable/yellow{
@@ -2502,7 +2464,6 @@
 	dir = 1
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 8
 	},
 /area/desert/interior/main_building)
@@ -2518,9 +2479,8 @@
 	icon_state = "wooden";
 	dir = 1
 	},
-/turf/open/floor{
-	dir = 1;
-	icon_state = "whitegreen"
+/turf/open/floor/tile/green/whitegreen{
+	dir = 1
 	},
 /area/desert/interior/main_building)
 "hv" = (
@@ -2538,7 +2498,6 @@
 	dir = 1
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 4
 	},
 /area/desert/interior/main_building)
@@ -2547,14 +2506,12 @@
 	dir = 8
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 9
 	},
 /area/desert/interior/main_building)
 "hx" = (
 /obj/structure/flora/pottedplant,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 1
 	},
 /area/desert/interior/main_building)
@@ -2564,42 +2521,36 @@
 	dir = 1
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 1
 	},
 /area/desert/interior/main_building)
 "hz" = (
 /obj/effect/spawner/random/tool,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 1
 	},
 /area/desert/interior/main_building)
 "hA" = (
 /obj/machinery/vending/cigarette/colony,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 1
 	},
 /area/desert/interior/main_building)
 "hB" = (
 /obj/structure/bed/chair/sofa/right,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 1
 	},
 /area/desert/interior/main_building)
 "hC" = (
 /obj/structure/bed/chair/sofa,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 1
 	},
 /area/desert/interior/main_building)
 "hD" = (
 /obj/structure/bed/chair/sofa/left,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 1
 	},
 /area/desert/interior/main_building)
@@ -2609,13 +2560,11 @@
 	},
 /obj/structure/flora/pottedplant,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 1
 	},
 /area/desert/interior/main_building)
 "hF" = (
 /turf/open/floor/tile/whiteyellow/corner{
-	icon_state = "whiteyellowcorner";
 	dir = 1
 	},
 /area/desert/interior/main_building)
@@ -2635,7 +2584,6 @@
 	icon_state = "2-4"
 	},
 /turf/open/floor/tile/whiteyellow/corner{
-	icon_state = "whiteyellowcorner";
 	dir = 4
 	},
 /area/desert/interior/main_building)
@@ -2656,7 +2604,6 @@
 	dir = 1
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 1
 	},
 /area/desert/interior/main_building)
@@ -2670,7 +2617,6 @@
 	},
 /obj/machinery/power/apc/drained,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 1
 	},
 /area/desert/interior/main_building)
@@ -2680,7 +2626,6 @@
 	dir = 1
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 1
 	},
 /area/desert/interior/main_building)
@@ -2717,7 +2662,6 @@
 	dir = 8
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 10
 	},
 /area/desert/interior/main_building)
@@ -2740,7 +2684,6 @@
 /area/desert/interior/main_building)
 "hW" = (
 /turf/open/floor/tile/whiteyellow/corner{
-	icon_state = "whiteyellowcorner";
 	dir = 8
 	},
 /area/desert/interior/main_building)
@@ -2787,7 +2730,6 @@
 "ie" = (
 /obj/machinery/door/airlock/colony/engineering{
 	name = "\improper Maintenance Airlock";
-	icon_state = "door_closed";
 	dir = 1
 	},
 /obj/structure/cable/yellow{
@@ -2806,7 +2748,6 @@
 "ig" = (
 /obj/machinery/washing_machine,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 9
 	},
 /area/desert/interior/toilet)
@@ -2821,7 +2762,6 @@
 	dir = 1
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 1
 	},
 /area/desert/interior/toilet)
@@ -2846,7 +2786,6 @@
 "im" = (
 /obj/machinery/vending/cola,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 8
 	},
 /area/desert/interior/main_building)
@@ -2923,7 +2862,6 @@
 	dir = 4
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 4
 	},
 /area/desert/interior/toilet)
@@ -3018,7 +2956,6 @@
 "iI" = (
 /obj/structure/flora/pottedplant,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 4
 	},
 /area/desert/interior/main_building)
@@ -3100,7 +3037,6 @@
 	icon_state = "0-2"
 	},
 /obj/machinery/power/terminal{
-	icon_state = "term";
 	dir = 1
 	},
 /turf/open/floor/plating,
@@ -3141,7 +3077,6 @@
 	dir = 4
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 8
 	},
 /area/desert/interior/toilet)
@@ -3196,7 +3131,6 @@
 	dir = 4
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 4
 	},
 /area/desert/interior/main_building)
@@ -3210,7 +3144,6 @@
 "jh" = (
 /obj/machinery/door/airlock/colony/engineering{
 	name = "\improper Maintenance Airlock";
-	icon_state = "door_closed";
 	dir = 1
 	},
 /turf/open/floor/plating,
@@ -3308,7 +3241,6 @@
 /area/desert/interior/engineering)
 "jw" = (
 /obj/structure/barricade/metal{
-	icon_state = "metal_0";
 	dir = 1
 	},
 /turf/open/floor/plating/plating_catwalk,
@@ -3329,7 +3261,6 @@
 /area/desert/interior/shipping/north)
 "jz" = (
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 8
 	},
 /area/desert/interior/toilet)
@@ -3349,7 +3280,6 @@
 "jD" = (
 /obj/effect/spawner/random/toolbox,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 8
 	},
 /area/desert/interior/main_building)
@@ -3358,7 +3288,6 @@
 	dir = 4
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 4
 	},
 /area/desert/interior/main_building)
@@ -3396,7 +3325,6 @@
 	dir = 4
 	},
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 4
 	},
 /area/desert/interior/main_building)
@@ -3495,14 +3423,12 @@
 /area/desert/outside)
 "jY" = (
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 6
 	},
 /area/desert/interior/toilet)
 "jZ" = (
 /obj/structure/barricade/wooden,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 10
 	},
 /area/desert/interior/main_building)
@@ -3545,7 +3471,6 @@
 "kg" = (
 /obj/structure/barricade/wooden,
 /turf/open/floor/tile/whiteyellow{
-	icon_state = "whiteyellow";
 	dir = 6
 	},
 /area/desert/interior/main_building)
@@ -3608,7 +3533,6 @@
 /area/desert/outside/sw)
 "kq" = (
 /obj/machinery/door/airlock/multi_tile/secure2_glass{
-	icon_state = "door_closed";
 	dir = 1
 	},
 /obj/machinery/door/poddoor/timed_late/containment/landing_zone,
@@ -3636,7 +3560,6 @@
 /area/desert/outside/sw)
 "ku" = (
 /obj/machinery/door/airlock/multi_tile/secure2_glass{
-	icon_state = "door_closed";
 	dir = 1
 	},
 /turf/open/floor/tile/dark,
@@ -3775,7 +3698,6 @@
 "kQ" = (
 /obj/machinery/door/airlock/colony/engineering{
 	name = "\improper Maintenance Airlock";
-	icon_state = "door_closed";
 	dir = 1
 	},
 /turf/open/floor/plating,
@@ -3928,7 +3850,6 @@
 /area/desert/interior/shipping/south)
 "lt" = (
 /obj/machinery/door/airlock/multi_tile/secure2_glass{
-	icon_state = "door_closed";
 	dir = 1
 	},
 /obj/machinery/door/poddoor/timed_late/containment/landing_zone,
@@ -3936,7 +3857,6 @@
 /area/desert/interior/shipping/south)
 "lu" = (
 /obj/machinery/door/airlock/multi_tile/secure2_glass{
-	icon_state = "door_closed";
 	dir = 1
 	},
 /turf/open/floor/tile/dark,
@@ -4096,14 +4016,34 @@
 /obj/machinery/power/port_gen/pacman,
 /turf/open/floor/plating/ground,
 /area/desert/outside)
+"zQ" = (
+/obj/machinery/door/poddoor/timed_late/containment/landing_zone{
+	icon_state = "pdoor1";
+	dir = 1
+	},
+/obj/docking_port/stationary/crashmode,
+/turf/closed/wall/r_wall,
+/area/desert/interior/shipping/north)
 "Bv" = (
 /obj/machinery/door/airlock/colony/engineering{
 	name = "\improper Storage";
-	icon_state = "door_closed";
 	dir = 8
 	},
 /turf/open/floor/plating,
 /area/desert/interior/security)
+"EQ" = (
+/obj/docking_port/stationary/crashmode,
+/turf/open/floor/plating/ground,
+/area/desert/outside)
+"EV" = (
+/obj/docking_port/stationary/crashmode,
+/turf/open/floor/plating/plating_catwalk,
+/area/desert/interior/shipping/south)
+"OJ" = (
+/obj/effect/alien/weeds/node/strong,
+/obj/docking_port/stationary/crashmode,
+/turf/open/floor/plating/ground,
+/area/desert/outside)
 
 (1,1,1) = {"
 au
@@ -18893,7 +18833,7 @@ aU
 bA
 bA
 bA
-bK
+OJ
 bA
 bA
 bA
@@ -21995,7 +21935,7 @@ bS
 kX
 bA
 bA
-bA
+EQ
 bA
 aC
 aC
@@ -32011,7 +31951,7 @@ ll
 ll
 ll
 ll
-li
+EV
 la
 ly
 lD
@@ -33504,7 +33444,7 @@ bA
 bA
 jF
 kY
-aO
+zQ
 bI
 fa
 fa

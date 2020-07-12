@@ -26,6 +26,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	var/tgui_lock = TRUE
 	var/toggles_chat = TOGGLES_CHAT_DEFAULT
 	var/toggles_sound = TOGGLES_SOUND_DEFAULT
+	var/toggles_gameplay = TOGGLES_GAMEPLAY_DEFAULT
 
 	var/ghost_hud = TOGGLES_GHOSTHUD_DEFAULT
 	var/ghost_vision = TRUE
@@ -108,6 +109,13 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	// Hud tooltip
 	var/tooltips = TRUE
 
+	/// Chat on map
+	var/chat_on_map = TRUE
+	var/see_chat_non_mob = TRUE
+	var/max_chat_length = CHAT_MESSAGE_MAX_LENGTH
+
+	var/auto_fit_viewport = TRUE
+
 
 /datum/preferences/New(client/C)
 	if(!istype(C))
@@ -124,7 +132,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	random_character()
 	menuoptions = list()
 	key_bindings = deepCopyList(GLOB.hotkey_keybinding_list_by_key) // give them default keybinds and update their movement keys
-	C.update_movement_keys()
+	C.update_movement_keys(src)
 
 
 /datum/preferences/can_interact(mob/user)
@@ -181,7 +189,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	dat += "<br>"
 
 	dat += "<center>"
-	dat += "<a href='?_src_=prefs;preference=jobmenu'>Set Marine Role Preferences</a><br>"
+	dat += "<a href='?_src_=prefs;preference=jobmenu'>Set Role Preferences</a><br>"
 	dat += "<a href='?_src_=prefs;preference=keybindings_menu'>Keybindings</a>"
 	dat += "</center>"
 
@@ -253,9 +261,6 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			if("Xeno Queen")
 				ban_check_name = ROLE_XENO_QUEEN
 
-			if("Survivor")
-				ban_check_name = ROLE_SURVIVOR
-
 		if(is_banned_from(user.ckey, ban_check_name))
 			dat += "<b>[role]:</b> <a href='?_src_=prefs;preference=bancheck;role=[role]'>BANNED</a><br>"
 		else
@@ -326,8 +331,12 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	dat += "<b>Focus chat:</b> <a href='?_src_=prefs;preference=focus_chat'>[(focus_chat) ? "Enabled" : "Disabled"]</a><br>"
 	dat += "<b>Tooltips:</b> <a href='?_src_=prefs;preference=tooltips'>[(tooltips) ? "Shown" : "Hidden"]</a><br>"
 	dat += "<b>FPS:</b> <a href='?_src_=prefs;preference=clientfps'>[clientfps]</a><br>"
+	dat += "<b>Fit Viewport:</b> <a href='?_src_=prefs;preference=auto_fit_viewport'>[auto_fit_viewport ? "Auto" : "Manual"]</a><br>"
 
-
+	dat += "<h2>Runechat Settings:</h2>"
+	dat += "<b>Show Runechat Chat Bubbles:</b> <a href='?_src_=prefs;preference=chat_on_map'>[chat_on_map ? "Enabled" : "Disabled"]</a><br>"
+	dat += "<b>Runechat message char limit:</b> <a href='?_src_=prefs;preference=max_chat_length;task=input'>[max_chat_length]</a><br>"
+	dat += "<b>See Runechat for non-mobs:</b> <a href='?_src_=prefs;preference=see_chat_non_mob'>[see_chat_non_mob ? "Enabled" : "Disabled"]</a><br>"
 
 	dat += "<h2>UI Customization:</h2>"
 	dat += "<b>Style:</b> <a href='?_src_=prefs;preference=ui'>[ui_style]</a><br>"
@@ -358,12 +367,12 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	var/width = widthPerColumn
 
 	var/HTML = "<center>"
-	if(!length(SSjob.occupations))
+	if(!length(SSjob.joinable_occupations))
 		HTML += "The job subsystem hasn't initialized yet, please try again later."
 		HTML += "<center><a href='?_src_=prefs;preference=jobclose'>Done</a></center><br>" // Easier to press up here.
 
 	else
-		HTML += "<b>Choose marine role preferences.</b><br>"
+		HTML += "<b>Choose role preferences.</b><br>"
 		HTML += "<div align='center'>Left-click to raise the preference, right-click to lower it.<br></div>"
 		HTML += "<center><a href='?_src_=prefs;preference=jobclose'>Done</a></center><br>" // Easier to press up here.
 		HTML += "<script type='text/javascript'>function setJobPrefRedirect(level, job) { window.location.href='?_src_=prefs;preference=jobselect;level=' + level + ';job=' + encodeURIComponent(job); return false; }</script>"
@@ -373,12 +382,9 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 		//The job before the current job. I only use this to get the previous jobs color when I'm filling in blank rows.
 		var/datum/job/lastJob
-		var/datum/job/overflow = SSjob.GetJob(SSjob.overflow_role)
 
-		for(var/datum/job/job in sortList(SSjob.occupations, /proc/cmp_job_display_asc))
-			if(!(job.title in GLOB.jobs_regular_all))
-				continue
-
+		for(var/j in SSjob.joinable_occupations)
+			var/datum/job/job = j
 			index += 1
 			if(index >= limit || (job.title in splitJobs))
 				width += widthPerColumn
@@ -404,7 +410,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				var/available_in_days = job.available_in_days(user.client)
 				HTML += "<font color=red>[rank]</font></td><td><font color=red> \[IN [(available_in_days)] DAYS\]</font></td></tr>"
 				continue
-			if((rank in GLOB.jobs_command) || rank == "AI")//Bold head jobs
+			if(job.job_flags & JOB_FLAG_BOLD_NAME_ON_SELECTION)
 				HTML += "<b><span class='dark'>[rank]</span></b>"
 			else
 				HTML += "<span class='dark'>[rank]</span>"
@@ -435,14 +441,6 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 			HTML += "<a class='white' href='?_src_=prefs;preference=jobselect;level=[prefUpperLevel];job=[rank]' oncontextmenu='javascript:return setJobPrefRedirect([prefLowerLevel], \"[rank]\");'>"
 
-			if(rank == SSjob.overflow_role) //Overflow is special
-				if(job_preferences[overflow.title] == JOBS_PRIORITY_LOW)
-					HTML += "<font color=green>Yes</font>"
-				else
-					HTML += "<font color=red>No</font>"
-				HTML += "</a></td></tr>"
-				continue
-
 			HTML += "<font color=[prefLevelColor]>[prefLevelLabel]</font>"
 			HTML += "</a></td></tr>"
 
@@ -455,7 +453,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 		var/message
 		switch(alternate_option)
 			if(BE_OVERFLOW)
-				message = "Be [SSjob.overflow_role] if preferences unavailable"
+				message = "Be [ispath(SSjob.overflow_role) ? initial(SSjob.overflow_role.title) : SSjob.overflow_role.title] if preferences unavailable"
 			if(GET_RANDOM_JOB)
 				message = "Get random job if preferences unavailable"
 			if(RETURN_TO_LOBBY)
@@ -606,7 +604,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			return TRUE
 
 		if("synth_name")
-			var/newname = input(user, "Choose your Synthetic's name:", "Synthetic Name") as text|null
+			var/newname = input(user, "Choose your Synthetic's name:", "Synthetic Name")
 			newname = reject_bad_name(newname)
 			if(!newname)
 				to_chat(user, "<font color='red'>Invalid name. Your name should be at least 2 and at most [MAX_NAME_LEN] characters long. It may only contain the characters A-Z, a-z, -, ' and .</font>")
@@ -620,7 +618,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			synthetic_type = new_synth_type
 
 		if("xeno_name")
-			var/newname = input(user, "Choose your Xenomorph name:", "Xenomorph Name") as text|null
+			var/newname = input(user, "Choose your Xenomorph name:", "Xenomorph Name")
 			if(newname == "")
 				xeno_name = "Undefined"
 			else
@@ -631,7 +629,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				xeno_name = newname
 
 		if("ai_name")
-			var/newname = input(user, "Choose your AI name:", "AI Name") as text|null
+			var/newname = input(user, "Choose your AI name:", "AI Name")
 			if(newname == "")
 				ai_name = "ARES v3.2"
 			else
@@ -642,7 +640,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				ai_name = newname
 
 		if("name_real")
-			var/newname = input(user, "Choose your character's name:", "Character Name") as text|null
+			var/newname = input(user, "Choose your character's name:", "Character Name")
 			newname = reject_bad_name(newname)
 			if(!newname)
 				to_chat(user, "<font color='red'>Invalid name. Your name should be at least 2 and at most [MAX_NAME_LEN] characters long. It may only contain the characters A-Z, a-z, -, ' and .</font>")
@@ -896,43 +894,36 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			return
 
 		if("med_record")
-			var/medmsg = input(user, "Set your medical notes here.", "Medical Records", sanitize(med_record)) as null|message
+			var/medmsg = stripped_input(user, "Set your medical notes here.", "Medical Records", sanitize(med_record))
 			if(!medmsg)
 				return
-			medmsg = copytext(sanitize(medmsg), 1, MAX_PAPER_MESSAGE_LEN)
 
 			med_record = medmsg
 			SetRecords(user)
 			return
 
 		if("sec_record")
-			var/secmsg = input(user,"Set your security notes here.", "Security Records", sanitize(sec_record)) as null|message
+			var/secmsg = stripped_input(user,"Set your security notes here.", "Security Records", sanitize(sec_record))
 			if(!secmsg)
 				return
-
-			secmsg = copytext(sanitize(secmsg), 1, MAX_PAPER_MESSAGE_LEN)
 
 			sec_record = secmsg
 			SetRecords(user)
 			return
 
 		if("gen_record")
-			var/genmsg = input(user, "Set your employment notes here.", "Employment Records", sanitize(gen_record)) as null|message
+			var/genmsg = stripped_input(user, "Set your employment notes here.", "Employment Records", sanitize(gen_record))
 			if(!genmsg)
 				return
-
-			genmsg = copytext(sanitize(genmsg), 1, MAX_PAPER_MESSAGE_LEN)
 
 			gen_record = genmsg
 			SetRecords(user)
 			return
 
 		if("exploit_record")
-			var/exploit = input(user, "Enter information that others may want to use against you.", "Exploit Record", sanitize(exploit_record)) as null|message
+			var/exploit = stripped_input(user, "Enter information that others may want to use against you.", "Exploit Record", sanitize(exploit_record))
 			if(!exploit)
 				return
-
-			exploit = copytext(sanitize(exploit), 1, MAX_PAPER_MESSAGE_LEN)
 
 			exploit_record = exploit
 			SetRecords(user)
@@ -942,14 +933,18 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			user << browse(null, "window=records")
 
 		if("flavor_text")
-			var/msg = input(user, "Give a physical description of your character.", "Flavor Text", sanitize(flavor_text)) as null|message
+			var/msg = stripped_input(user, "Give a physical description of your character.", "Flavor Text", sanitize(flavor_text))
 			if(!msg)
 				return
-			msg = copytext(sanitize(msg), 1, MAX_MESSAGE_LEN)
 			flavor_text = msg
 
 		if("windowflashing")
 			windowflashing = !windowflashing
+
+		if("auto_fit_viewport")
+			auto_fit_viewport = !auto_fit_viewport
+			if(auto_fit_viewport && parent)
+				parent.fit_viewport()
 
 		if("focus_chat")
 			focus_chat = !focus_chat
@@ -965,6 +960,17 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			desiredfps = CLAMP(desiredfps, 0, 240)
 			clientfps = desiredfps
 			parent.fps = desiredfps
+
+		if("chat_on_map")
+			chat_on_map = !chat_on_map
+
+		if ("max_chat_length")
+			var/desiredlength = input(user, "Choose the max character length of shown Runechat messages. Valid range is 1 to [CHAT_MESSAGE_MAX_LENGTH] (default: [initial(max_chat_length)]))", "Character Preference", max_chat_length)  as null|num
+			if (!isnull(desiredlength))
+				max_chat_length = clamp(desiredlength, 1, CHAT_MESSAGE_MAX_LENGTH)
+
+		if("see_chat_non_mob")
+			see_chat_non_mob = !see_chat_non_mob
 
 		if("tooltips")
 			tooltips = !tooltips
@@ -1075,7 +1081,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 
 /datum/preferences/proc/UpdateJobPreference(mob/user, role, desiredLvl)
-	if(!SSjob || !length(SSjob.occupations))
+	if(!length(SSjob?.joinable_occupations))
 		return
 
 	var/datum/job/job = SSjob.GetJob(role)
@@ -1084,12 +1090,6 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 		user << browse(null, "window=mob_occupation")
 		ShowChoices(user)
 		return
-
-	if(role == SSjob.overflow_role)
-		if(job_preferences[job.title] == JOBS_PRIORITY_LOW)
-			desiredLvl = JOBS_PRIORITY_NEVER
-		else
-			desiredLvl = JOBS_PRIORITY_LOW
 
 	SetJobPreferenceLevel(job, desiredLvl)
 	SetChoices(user)

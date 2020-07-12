@@ -1,5 +1,9 @@
 //for all defines that doesn't fit in any other file.
 
+//Fullscreen overlay resolution in tiles.
+#define FULLSCREEN_OVERLAY_RESOLUTION_X 15
+#define FULLSCREEN_OVERLAY_RESOLUTION_Y 15
+
 //Run the world with this parameter to enable a single run though of the game setup and tear down process with unit tests in between
 #define TEST_RUN_PARAMETER "test-run"
 //Force the log directory to be something specific in the data/logs folder
@@ -13,6 +17,9 @@
 #define APPEARANCE_UI_IGNORE_ALPHA			(RESET_COLOR|RESET_TRANSFORM|NO_CLIENT_COLOR|RESET_ALPHA|PIXEL_SCALE)
 #define APPEARANCE_UI						(RESET_COLOR|RESET_TRANSFORM|NO_CLIENT_COLOR|PIXEL_SCALE)
 #define APPEARANCE_UI_TRANSFORM				(RESET_COLOR|NO_CLIENT_COLOR|RESET_ALPHA|PIXEL_SCALE)
+
+//Just space
+#define SPACE_ICON_STATE	"[((x + y) ^ ~(x * y) + z) % 25]"
 
 //dirt type for each turf types.
 #define NO_DIRT				0
@@ -86,6 +93,10 @@ GLOBAL_VAR_INIT(global_unique_id, 1)
 #define GHOST_OTHERS_DEFAULT_OPTION			GHOST_OTHERS_THEIR_SETTING
 
 #define GHOST_DEFAULT_FORM 		"ghost"
+
+
+//for obj explosion block calculation
+#define EXPLOSION_BLOCK_PROC -1
 
 
 //Luma coefficients suggested for HDTVs. If you change these, make sure they add up to 1.

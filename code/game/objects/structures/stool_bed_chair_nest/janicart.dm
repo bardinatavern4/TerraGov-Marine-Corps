@@ -1,6 +1,6 @@
 
 
-//old style retardo-cart
+///old style janicart
 /obj/structure/bed/chair/janicart
 	name = "janicart"
 	icon = 'icons/obj/vehicles.dmi'
@@ -8,7 +8,7 @@
 	icon_state = "pussywagon"
 	anchored = FALSE
 	density = TRUE
-	buildstacktype = null //can't be disassembled and doesn't drop anything when destroyed
+	buildstacktype = null ///can't be disassembled and doesn't drop anything when destroyed
 	buckle_flags = CAN_BUCKLE
 	//copypaste sorry
 	var/amount_per_transfer_from_this = 5 //shit I dunno, adding this so syringes stop runtime erroring. --NeoFite
@@ -70,7 +70,7 @@
 		to_chat(user, "<span class='notice'>You'll need the keys in one of your hands to drive this [callme].</span>")
 
 
-/obj/structure/bed/chair/janicart/bullet_act(obj/item/projectile/Proj)
+/obj/structure/bed/chair/janicart/bullet_act(obj/projectile/Proj)
 	if(LAZYLEN(buckled_mobs))
 		if(prob(85))
 			return buckled_mobs[1].bullet_act(Proj)

@@ -60,7 +60,7 @@
 /obj/docking_port/mobile/escape_pod/proc/explode()
 	var/turf/T = return_center_turf()
 	var/average_dimension = (width+height)*0.25
-	explosion(T, -1, -1, average_dimension, average_dimension)
+	explosion(T, 0, 0, average_dimension, average_dimension)
 	launch_status = NOLAUNCH
 	open_all_doors()
 	SSshuttle.escape_pods -= src // no longer a valid pod
@@ -173,7 +173,7 @@
 		linked_to_shuttle = TRUE
 
 /obj/machinery/cryopod/evacuation/ex_act(severity)
-	return FALSE
+	return
 
 /obj/machinery/cryopod/evacuation/attackby(obj/item/grab/G, mob/user)
 	if(istype(G))
@@ -255,7 +255,6 @@
 	if(occupant)
 		to_chat(M, "<span class='warning'>The cryogenic pod is already in use. You will need to find another.</span>")
 		return FALSE
-		return
 	M.forceMove(src)
 	to_chat(M, "<span class='notice'>You feel cool air surround you as your mind goes blank and the pod locks.</span>")
 	occupant = M

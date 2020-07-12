@@ -358,10 +358,7 @@ GLOBAL_LIST_EMPTY(active_laser_targets)
 				else
 					handle_supplydrop()
 		if("dropbomb")
-			if((GLOB.marine_main_ship?.orbital_cannon?.last_orbital_firing + 5000) > world.time)
-				to_chat(usr, "[icon2html(src, usr)] <span class='warning'>Orbital bombardment not yet available!</span>")
-			else
-				handle_bombard()
+			handle_bombard()
 		if("shootrailgun")
 			if((GLOB.marine_main_ship?.rail_gun?.last_firing + 600) > world.time)
 				to_chat(usr, "[icon2html(src, usr)] <span class='warning'>The Rail Gun hasn't cooled down yet!</span>")
@@ -416,10 +413,7 @@ GLOBAL_LIST_EMPTY(active_laser_targets)
 				dat += "----------------------<br>"
 				dat += "<b>Orbital Bombardment Control</b><br>"
 				dat += "<b>Current Cannon Status:</b> "
-				var/cooldown_left = (GLOB.marine_main_ship?.orbital_cannon?.last_orbital_firing + 5000) - world.time
-				if(cooldown_left > 0)
-					dat += "Cannon on cooldown ([round(cooldown_left/10)] seconds)<br>"
-				else if(!GLOB.marine_main_ship?.orbital_cannon?.chambered_tray)
+				if(!GLOB.marine_main_ship?.orbital_cannon?.chambered_tray)
 					dat += "<font color='red'>No ammo chambered in the cannon.</font><br>"
 				else
 					dat += "<font color='green'>Ready!</font><br>"
@@ -539,7 +533,7 @@ GLOBAL_LIST_EMPTY(active_laser_targets)
 		current_squad.message_squad("Attention: A new Squad Leader has been set: [H.real_name].")
 		visible_message("<span class='boldnotice'>[H.real_name] is the new Squad Leader of squad '[current_squad]'! Logging to enlistment file.</span>")
 
-	to_chat(H, "[icon2html(src, H)] <font size='3' color='blue'><B>\[Overwatch\]: You've been promoted to \'[H.mind.assigned_role == SQUAD_LEADER ? "SQUAD LEADER" : "ACTING SQUAD LEADER"]\' for [current_squad.name]. Your headset has access to the command channel (:v).</B></font>")
+	to_chat(H, "[icon2html(src, H)] <font size='3' color='blue'><B>\[Overwatch\]: You've been promoted to \'[ismarineleaderjob(H.job) ? "SQUAD LEADER" : "ACTING SQUAD LEADER"]\' for [current_squad.name]. Your headset has access to the command channel (:v).</B></font>")
 	to_chat(usr, "[icon2html(src, usr)] [H.real_name] is [current_squad]'s new leader!")
 	current_squad.promote_leader(H)
 
@@ -581,10 +575,14 @@ GLOBAL_LIST_EMPTY(active_laser_targets)
 	var/mob/living/carbon/human/transfer_marine = input(usr, "Choose marine to transfer") as null|anything in current_squad.get_all_members()
 	if(!transfer_marine)
 		return
+
+	if(!transfer_marine.job)
+		CRASH("[transfer_marine] selected for transfer without a job.")
+
 	if(S != current_squad)
 		return //don't change overwatched squad, idiot.
 
-	if(!istype(transfer_marine) || !transfer_marine.mind || transfer_marine.stat == DEAD) //gibbed, decapitated, dead
+	if(!istype(transfer_marine) || transfer_marine.stat == DEAD) //gibbed, decapitated, dead
 		to_chat(usr, "[icon2html(src, usr)] <span class='warning'>[transfer_marine] is KIA.</span>")
 		return
 
@@ -599,7 +597,7 @@ GLOBAL_LIST_EMPTY(active_laser_targets)
 		return
 	var/datum/squad/new_squad = SSjob.active_squads[choice]
 
-	if(!istype(transfer_marine) || !transfer_marine.mind || transfer_marine.stat == DEAD)
+	if(!istype(transfer_marine) || transfer_marine.stat == DEAD)
 		to_chat(usr, "[icon2html(src, usr)] <span class='warning'>[transfer_marine] is KIA.</span>")
 		return
 
@@ -612,27 +610,8 @@ GLOBAL_LIST_EMPTY(active_laser_targets)
 		to_chat(usr, "[icon2html(src, usr)] <span class='warning'>[transfer_marine] is already in [new_squad]!</span>")
 		return
 
-
-	var/no_place = FALSE
-	switch(transfer_marine.mind.assigned_role)
-		if(SQUAD_LEADER)
-			if(new_squad.num_leaders == new_squad.max_leaders)
-				no_place = TRUE
-		if(SQUAD_SPECIALIST)
-			if(new_squad.num_specialists == new_squad.max_specialists)
-				no_place = TRUE
-		if(SQUAD_ENGINEER)
-			if(new_squad.num_engineers >= new_squad.max_engineers)
-				no_place = TRUE
-		if(SQUAD_CORPSMAN)
-			if(new_squad.num_medics >= new_squad.max_medics)
-				no_place = TRUE
-		if(SQUAD_SMARTGUNNER)
-			if(new_squad.num_smartgun == new_squad.max_smartgun)
-				no_place = TRUE
-
-	if(no_place)
-		to_chat(usr, "[icon2html(src, usr)] <span class='warning'>Transfer aborted. [new_squad] can't have another [transfer_marine.mind.assigned_role].</span>")
+	if(ismarineleaderjob(transfer_marine.job) && new_squad.current_positions[/datum/job/terragov/squad/leader] >= SQUAD_MAX_POSITIONS(transfer_marine.job.total_positions))
+		to_chat(usr, "[icon2html(src, usr)] <span class='warning'>Transfer aborted. [new_squad] can't have another [transfer_marine.job.title].</span>")
 		return
 
 	old_squad.remove_from_squad(transfer_marine)
@@ -836,9 +815,7 @@ GLOBAL_LIST_EMPTY(active_laser_targets)
 		to_chat(user, "<span class='warning'>You have to be outside or under a glass ceiling to activate this.</span>")
 		return
 
-	var/delay = activation_time
-	if(user.mind.cm_skills)
-		delay = max(10, delay - 20*user.mind.cm_skills.leadership)
+	var/delay = max(1 SECONDS, activation_time - 2 SECONDS * user.skills.getRating("leadership"))
 
 	user.visible_message("<span class='notice'>[user] starts setting up [src] on the ground.</span>",
 	"<span class='notice'>You start setting up [src] on the ground and inputting all the data it needs.</span>")
@@ -889,9 +866,7 @@ GLOBAL_LIST_EMPTY(active_laser_targets)
 	if(A && istype(A) && A.ceiling >= CEILING_DEEP_UNDERGROUND)
 		to_chat(H, "<span class='warning'>This won't work if you're standing deep underground.</span>")
 		return
-	var/delay = activation_time
-	if(H.mind.cm_skills)
-		delay = max(15, delay - 20*H.mind.cm_skills.leadership)
+	var/delay = max(1.5 SECONDS, activation_time - 2 SECONDS * H.skills.getRating("leadership"))
 	H.visible_message("<span class='notice'>[H] starts setting up [src] on the ground.</span>",
 	"<span class='notice'>You start setting up [src] on the ground and inputting all the data it needs.</span>")
 	if(do_after(H, delay, TRUE, src, BUSY_ICON_GENERIC))
@@ -920,9 +895,7 @@ GLOBAL_LIST_EMPTY(active_laser_targets)
 		"You activate [src]")
 
 /obj/item/squad_beacon/bomb/proc/deactivate(mob/living/carbon/human/H)
-	var/delay = activation_time * 0.5 //Half as long as setting it up.
-	if(H.mind.cm_skills)
-		delay = max(10, delay - 20 * H.mind.cm_skills.leadership)
+	var/delay = max(1 SECONDS, activation_time * 0.5 - 2 SECONDS * H.skills.getRating("leadership")) //Half as long as setting it up.
 	H.visible_message("<span class='notice'>[H] starts removing [src] from the ground.</span>",
 	"<span class='notice'>You start removing [src] from the ground, deactivating it.</span>")
 	if(do_after(H, delay, TRUE, src, BUSY_ICON_GENERIC))
@@ -952,7 +925,7 @@ GLOBAL_LIST_EMPTY(active_laser_targets)
 /mob/living/carbon/human/verb/issue_order(which as null|text)
 	set hidden = TRUE
 
-	if(!mind.cm_skills || (mind.cm_skills && mind.cm_skills.leadership < SKILL_LEAD_TRAINED))
+	if(skills.getRating("leadership") < SKILL_LEAD_TRAINED)
 		to_chat(src, "<span class='warning'>You are not competent enough in leadership to issue an order.</span>")
 		return
 
@@ -1122,17 +1095,15 @@ GLOBAL_LIST_EMPTY(active_laser_targets)
 				if(is_mainship_level(M_turf?.z))
 					continue
 
-		if(H.mind?.assigned_role)
-			role = H.mind.assigned_role
-		else if(H.job)
-			role = H.job
+		if(H.job)
+			role = H.job.title
 		else if(istype(H.wear_id, /obj/item/card/id))
 			var/obj/item/card/id/ID = H.wear_id //we use their ID to get their role.
 			role = ID.rank
 		if(current_squad.squad_leader)
 			if(H == current_squad.squad_leader)
 				dist = "<b>N/A</b>"
-				if(H.mind && H.mind.assigned_role != SQUAD_LEADER)
+				if(!ismarineleaderjob(H.job))
 					act_sl = " (acting SL)"
 			else if(M_turf && SL_z && M_turf.z == SL_z)
 				dist = "[get_dist(H, current_squad.squad_leader)] ([dir2text_short(get_dir(current_squad.squad_leader, H))])"

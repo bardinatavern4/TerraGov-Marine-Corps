@@ -66,6 +66,11 @@
 		_y + (-dwidth+width-1)*sin + (-dheight+height-1)*cos
 		)
 
+/// Return number of turfs
+/obj/docking_port/proc/return_number_of_turfs()
+	var/list/L = return_coords()
+	return (L[3]-L[1]) * (L[4]-L[2])
+
 //returns turfs within our projected rectangle in no particular order
 /obj/docking_port/proc/return_turfs()
 	var/list/L = return_coords()
@@ -466,6 +471,7 @@
 			WARNING("shuttle \"[id]\" could not enter transit space. Docked at [S0 ? S0.id : "null"]. Transit dock [S1 ? S1.id : "null"].")
 		else
 			previous = S0
+			return TRUE
 	else
 		WARNING("shuttle \"[id]\" could not enter transit space. S0=[S0 ? S0.id : "null"] S1=[S1 ? S1.id : "null"]")
 
@@ -712,7 +718,7 @@
 	if(timeleft > 1 HOURS)
 		return "--:--"
 	else if(timeleft > 0)
-		return "[add_zero(num2text((timeleft / 60) % 60),2)]:[add_zero(num2text(timeleft % 60), 2)]"
+		return "[add_leading(num2text((timeleft / 60) % 60), 2, "0")]:[add_leading(num2text(timeleft % 60), 2, "0")]"
 	else
 		return "00:00"
 
@@ -778,7 +784,7 @@
 			CRASH("Invalid hyperspace sound phase: [phase]")
 	for(var/A in areas)
 		for(var/obj/machinery/door/E in A)	//dumb, I know, but playing it on the engines doesn't do it justice
-			playsound(E, s, 100, FALSE, max(width, height) - world.view)
+			playsound(E, s, 100, FALSE, max(width, height) - WORLD_VIEW_NUM)
 */
 // Losing all initial engines should get you 2
 // Adding another set of engines at 0.5 time

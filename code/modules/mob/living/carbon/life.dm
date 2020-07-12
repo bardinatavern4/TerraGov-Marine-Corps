@@ -46,6 +46,9 @@
 
 /mob/living/carbon/update_stat()
 	. = ..()
+	if(.)
+		return
+
 	if(status_flags & GODMODE)
 		return
 
@@ -53,19 +56,19 @@
 		return
 
 	if(health <= get_death_threshold())
+		if(gib_chance && prob(gib_chance + 0.5 * (get_death_threshold() - health)))
+			gib()
+			return TRUE
 		death()
 		return
 
-	if(IsUnconscious() || IsSleeping() || IsAdminSleeping() || getOxyLoss() > CARBON_KO_OXYLOSS || health < get_crit_threshold())
-		if(stat != UNCONSCIOUS)
-			blind_eyes(1)
-			disabilities |= DEAF
-		stat = UNCONSCIOUS
+	if(HAS_TRAIT(src, TRAIT_KNOCKEDOUT) || getOxyLoss() > CARBON_KO_OXYLOSS || health < get_crit_threshold())
+		if(stat == UNCONSCIOUS)
+			return
+		set_stat(UNCONSCIOUS)
 	else if(stat == UNCONSCIOUS)
-		stat = CONSCIOUS
-		adjust_blindness(-1)
-		disabilities &= ~DEAF
-	update_canmove()
+		set_stat(CONSCIOUS)
+
 
 /mob/living/carbon/handle_status_effects()
 	. = ..()
@@ -87,19 +90,9 @@
 		do_jitter_animation(jitteriness)
 		jitter(-restingpwr)
 
-	if(hallucination)
-		if(hallucination >= 20)
-			if(prob(3))
-				fake_attack(src)
-			if(!handling_hal)
-				spawn handle_hallucinations()//The not boring kind!
+	if(hallucination >= 20) // hallucinations require stacking before triggering
+		handle_hallucinations()
 
-		hallucination = max(hallucination - 3, 0)
-
-	else
-		for(var/atom/a in hallucinations)
-			hallucinations -=a
-			qdel(a)
 
 	if(halloss)
 		halloss_recovery()
@@ -116,7 +109,7 @@
 			if((mind.active && client != null) || immune_to_ssd) //This also checks whether a client is connected, if not, sleep is not reduced.
 				AdjustSleeping(-20)
 		if(!isxeno(src))
-			if(prob(2) && health && !hal_crit)
+			if(prob(2) && health && !hallucination)
 				emote("snore")
 
 	if(drunkenness)

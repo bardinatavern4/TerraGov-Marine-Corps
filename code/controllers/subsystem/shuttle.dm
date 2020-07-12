@@ -17,11 +17,7 @@ SUBSYSTEM_DEF(shuttle)
 	var/obj/docking_port/mobile/crashmode/canterbury = null
 
 	var/obj/docking_port/mobile/supply/supply
-	var/ordernum = 1					//order number given to next order
 
-	var/list/supply_packs = list()
-	var/list/shoppinglist = list()
-	var/list/requestlist = list()
 	var/list/orderhistory = list()
 
 	var/list/crash_targets = list()
@@ -45,16 +41,7 @@ SUBSYSTEM_DEF(shuttle)
 	var/datum/turf_reservation/preview_reservation
 
 /datum/controller/subsystem/shuttle/Initialize(timeofday)
-	ordernum = rand(1, 9000)
-
-	for(var/pack in subtypesof(/datum/supply_packs))
-		var/datum/supply_packs/P = new pack()
-		if(!P.contains)
-			continue
-		supply_packs[P.name] = P
-
 	initial_load()
-
 	return ..()
 
 /datum/controller/subsystem/shuttle/proc/initial_load()
@@ -258,14 +245,8 @@ SUBSYSTEM_DEF(shuttle)
 	if (istype(SSshuttle.canterbury))
 		canterbury = SSshuttle.canterbury
 
-	if (istype(SSshuttle.shoppinglist))
-		shoppinglist = SSshuttle.shoppinglist
-	if (istype(SSshuttle.requestlist))
-		requestlist = SSshuttle.requestlist
 	if (istype(SSshuttle.orderhistory))
 		orderhistory = SSshuttle.orderhistory
-
-	ordernum = SSshuttle.ordernum
 
 	lockdown = SSshuttle.lockdown
 
@@ -456,29 +437,8 @@ SUBSYSTEM_DEF(shuttle)
 /datum/controller/subsystem/shuttle/ui_interact(mob/user, ui_key = "main", datum/tgui/ui = null, force_open = FALSE, datum/tgui/master_ui = null, datum/ui_state/state = GLOB.admin_state)
 	ui = SStgui.try_update_ui(user, src, ui_key, ui, force_open)
 	if(!ui)
-		ui = new(user, src, ui_key, "shuttle_manipulator", name, 800, 600, master_ui, state)
+		ui = new(user, src, ui_key, "ShuttleManipulator", name, 800, 600, master_ui, state)
 		ui.open()
-
-/proc/shuttlemode2str(mode)
-	switch(mode)
-		if(SHUTTLE_IDLE)
-			. = "idle"
-		if(SHUTTLE_IGNITING)
-			. = "engines charging"
-		if(SHUTTLE_RECALL)
-			. = "recalled"
-		if(SHUTTLE_CALL)
-			. = "called"
-		if(SHUTTLE_DOCKED)
-			. = "docked"
-		if(SHUTTLE_STRANDED)
-			. = "stranded"
-		if(SHUTTLE_ESCAPE)
-			. = "escape"
-		if(SHUTTLE_ENDGAME)
-			. = "endgame"
-	if(!.)
-		CRASH("shuttlemode2str(): invalid mode [mode]")
 
 
 /datum/controller/subsystem/shuttle/ui_data(mob/user)
@@ -532,7 +492,7 @@ SUBSYSTEM_DEF(shuttle)
 		if(!M.destination)
 			L["can_fast_travel"] = FALSE
 		if (M.mode != SHUTTLE_IDLE)
-			L["mode"] = capitalize(shuttlemode2str(M.mode))
+			L["mode"] = capitalize(M.mode)
 		L["status"] = M.getDbgStatusText()
 		if(M == existing_shuttle)
 			data["existing_shuttle"] = L

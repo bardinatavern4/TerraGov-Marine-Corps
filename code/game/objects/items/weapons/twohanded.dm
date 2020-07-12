@@ -47,7 +47,7 @@
 
 	toggle_wielded(user, TRUE)
 	name = "[name] (Wielded)"
-	item_state = "[icon_state]_w"
+	update_item_state(user)
 	place_offhand(user, name)
 	return TRUE
 
@@ -58,7 +58,7 @@
 
 	toggle_wielded(user, FALSE)
 	name = initial(name)
-	item_state = initial(item_state)
+	update_item_state(user)
 	remove_offhand(user)
 	return TRUE
 
@@ -214,8 +214,21 @@
 	edge = 1
 
 
-/obj/item/weapon/twohanded/dualsaber/IsShield()
-	return CHECK_BITFIELD(flags_item, WIELDED)
+/obj/item/weapon/twohanded/dualsaber/Initialize()
+	. = ..()
+	AddComponent(/datum/component/shield, SHIELD_TOGGLE|SHIELD_PURE_BLOCKING)
+
+/obj/item/weapon/twohanded/dualsaber/wield(mob/user)
+	. = ..()
+	if(!.)
+		return
+	toggle_active(TRUE)
+
+/obj/item/weapon/twohanded/dualsaber/unwield(mob/user)
+	. = ..()
+	if(!.)
+		return
+	toggle_active(FALSE)
 
 
 /obj/item/weapon/twohanded/spear

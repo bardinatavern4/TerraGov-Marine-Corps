@@ -12,9 +12,9 @@
 	density = TRUE
 	anchored = TRUE
 	use_power = NO_POWER_USE
-	interaction_flags = INTERACT_MACHINE_NANO
-	var/capacity = 5e6		//Maximum amount of power it can hold
-	var/charge = 1e6		//Current amount of power it holds
+	interaction_flags = INTERACT_MACHINE_TGUI
+	var/capacity = 5e5		//Maximum amount of power it can hold
+	var/charge = 1e5		//Current amount of power it holds
 
 	var/input_attempt = TRUE //attempting to charge ?
 	var/inputting = TRUE
@@ -254,28 +254,26 @@
 										datum/tgui/master_ui = null, datum/ui_state/state = GLOB.default_state)
 	ui = SStgui.try_update_ui(user, src, ui_key, ui, force_open)
 	if(!ui)
-		ui = new(user, src, ui_key, "smes", name, ui_x, ui_y, master_ui, state)
+		ui = new(user, src, ui_key, "Smes", name, ui_x, ui_y, master_ui, state)
 		ui.open()
 
 /obj/machinery/power/smes/ui_data()
 	var/list/data = list(
-		"capacityPercent" = round(100*charge/capacity, 0.1),
 		"capacity" = capacity,
+		"capacityPercent" = round(100*charge/capacity, 0.1),
 		"charge" = charge,
-
 		"inputAttempt" = input_attempt,
 		"inputting" = inputting,
 		"inputLevel" = input_level,
 		"inputLevel_text" = DisplayPower(input_level),
 		"inputLevelMax" = input_level_max,
-		"inputAvailable" = DisplayPower(input_available),
-
+		"inputAvailable" = input_available,
 		"outputAttempt" = output_attempt,
 		"outputting" = outputting,
 		"outputLevel" = output_level,
 		"outputLevel_text" = DisplayPower(output_level),
 		"outputLevelMax" = output_level_max,
-		"outputUsed" = DisplayPower(output_used)
+		"outputUsed" = output_used,
 	)
 	return data
 
@@ -376,7 +374,7 @@
 			var/datum/effect_system/smoke_spread/smoke = new(src)
 			smoke.set_up(1, loc)
 			smoke.start()
-			explosion(src.loc, -1, 0, 1, 3, 1, 0)
+			explosion(loc, light_impact_range = 2, flash_range = 3)
 			qdel(src)
 			return
 		if(prob(15)) //Power drain

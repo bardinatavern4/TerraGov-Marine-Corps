@@ -35,11 +35,11 @@
 
 /obj/effect/alien/ex_act(severity)
 	switch(severity)
-		if(1)
+		if(EXPLODE_DEVASTATE)
 			take_damage(500)
-		if(2)
+		if(EXPLODE_HEAVY)
 			take_damage((rand(140, 300)))
-		if(3)
+		if(EXPLODE_LIGHT)
 			take_damage((rand(50, 100)))
 
 /obj/effect/alien/effect_smoke(obj/effect/particle_effect/smoke/S)
@@ -47,7 +47,7 @@
 	if(!.)
 		return
 	if(CHECK_BITFIELD(S.smoke_traits, SMOKE_BLISTERING))
-		take_damage(rand(0.2, 2))
+		take_damage(rand(2, 20) * 0.1)
 
 /*
 * Resin
@@ -86,7 +86,7 @@
 
 	var/mob/living/carbon/human/H = AM
 
-	if(H.lying)
+	if(H.lying_angle)
 		return
 
 	H.next_move_slowdown += slow_amt
@@ -154,7 +154,7 @@
 		playsound(src, "alien_resin_break", 25)
 		C.visible_message("<span class='warning'>[C] trips on [src]!</span>",\
 						"<span class='danger'>You trip on [src]!</span>")
-		C.Knockdown(40)
+		C.Paralyze(40)
 		if(!QDELETED(linked_carrier) && linked_carrier.stat == CONSCIOUS && linked_carrier.z == z)
 			var/area/A = get_area(src)
 			if(A)
@@ -204,6 +204,7 @@
 
 
 /obj/effect/alien/resin/trap/Crossed(atom/A)
+	. = ..()
 	if(iscarbon(A))
 		HasProximity(A)
 
@@ -378,7 +379,7 @@
 	name = "egg"
 	icon_state = "Egg Growing"
 	density = FALSE
-
+	flags_atom = CRITICAL_ATOM
 	max_integrity = 80
 	var/obj/item/clothing/mask/facehugger/hugger = null
 	var/hugger_type = /obj/item/clothing/mask/facehugger/stasis
@@ -398,6 +399,13 @@
 /obj/effect/alien/egg/Destroy()
 	QDEL_LIST(egg_triggers)
 	return ..()
+
+/obj/effect/alien/egg/proc/transfer_to_hive(new_hivenumber)
+	if(hivenumber == new_hivenumber)
+		return
+	hivenumber = new_hivenumber
+	if(hugger)
+		hugger.hivenumber = new_hivenumber
 
 /obj/effect/alien/egg/proc/Grow()
 	if(status == EGG_GROWING)
@@ -548,6 +556,7 @@
 
 
 /obj/effect/egg_trigger/Crossed(atom/A)
+	. = ..()
 	if(!linked_egg) //something went very wrong
 		qdel(src)
 	else if(get_dist(src, linked_egg) != 1 || !isturf(linked_egg.loc)) //something went wrong
@@ -619,11 +628,11 @@ TUNNEL
 
 /obj/structure/tunnel/ex_act(severity)
 	switch(severity)
-		if(1)
+		if(EXPLODE_DEVASTATE)
 			take_damage(210)
-		if(2)
+		if(EXPLODE_HEAVY)
 			take_damage(140)
-		if(3)
+		if(EXPLODE_LIGHT)
 			take_damage(70)
 
 /obj/structure/tunnel/attackby(obj/item/I, mob/user, params)
@@ -632,7 +641,7 @@ TUNNEL
 	attack_alien(user)
 
 /obj/structure/tunnel/attack_alien(mob/living/carbon/xenomorph/M)
-	if(!istype(M) || M.stat || M.lying)
+	if(!istype(M) || M.stat || M.lying_angle)
 		return
 
 	if(M.a_intent == INTENT_HARM && M == creator)
